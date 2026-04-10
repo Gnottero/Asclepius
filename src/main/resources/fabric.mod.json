@@ -1,0 +1,42 @@
+{
+	"schemaVersion": 1,
+	"id": "asclepius",
+	"version": "${version}",
+	"name": "Asclepius Features",
+	"description": "Powerful features and tools for the Asclepius project.",
+	"authors": [
+		"Me!"
+	],
+	"contact": {
+		"homepage": "https://fabricmc.net/",
+		"sources": "https://github.com/FabricMC/fabric-example-mod"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/asclepius/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.gnottero.asclepius.Asclepius"
+		],
+		"fabric-datagen": [
+			"com.gnottero.asclepius.datagen.AsclepiusDataGenerator"
+		]
+	},
+	"mixins": [
+		"asclepius-features.mixins.json",
+		{
+			"config": "asclepius-features.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.18.5",
+		"minecraft": "~26.1",
+		"java": ">=25",
+		"fabric-api": "*",
+		"polymer-core": ">=0.16.0-pre.4",
+		"polymer-blocks": ">=0.16.0-pre.4",
+		"polymer-virtual-entity": ">=0.16.0-pre.4",
+		"factorytools": ">=0.10.0"
+	}
+}

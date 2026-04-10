@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "package": "com.gnottero.asclepius.mixin.client",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "ItemModelGeneratorsAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

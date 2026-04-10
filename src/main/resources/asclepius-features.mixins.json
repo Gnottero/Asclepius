@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "com.gnottero.asclepius.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "mixins": [
+    "AxeItemAccessor",
+    "EndCityElytraMixin",
+    "ShovelItemAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+	}
+}

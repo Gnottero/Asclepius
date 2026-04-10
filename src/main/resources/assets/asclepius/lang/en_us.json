@@ -1,0 +1,15 @@
+{
+  "item.asclepius.enderic_key": "Enderic Key",
+  "item.asclepius.enderic_key_description": "Can be used to unlock vaults in the End City Ship",
+  "item.asclepius.wooden_paxel": "Wooden Paxel",
+  "item.asclepius.stone_paxel": "Stone Paxel",
+  "item.asclepius.copper_paxel": "Copper Paxel",
+  "item.asclepius.iron_paxel": "Iron Paxel",
+  "item.asclepius.golden_paxel": "Golden Paxel",
+  "item.asclepius.diamond_paxel": "Diamond Paxel",
+  "item.asclepius.netherite_paxel": "Netherite Paxel",
+  "item.asclepius.paxel_description": "Use an empty offhand to interacts with blocks",
+  "block.asclepius.teru_teru_bozu": "Teru Teru Bozu",
+  "item.asclepius.teru_teru_bozu": "Teru Teru Bozu",
+  "itemgroup.asclepius.name": "Asclepius"
+}
