@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": "minecraft:ender_eye",
+    "K": "minecraft:trial_key",
+    "S": "minecraft:shulker_shell"
+  },
+  "pattern": [
+    "S",
+    "K",
+    "E"
+  ],
+  "result": {
+    "id": "asclepius:ender_key"
+  }
+}

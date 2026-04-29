@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": "minecraft:ender_eye",
+    "I": "minecraft:iron_ingot",
+    "L": "minecraft:lapis_lazuli"
+  },
+  "pattern": [
+    "LIL",
+    "IEI",
+    "LIL"
+  ],
+  "result": {
+    "id": "asclepius:eye_of_recall"
+  }
+}
