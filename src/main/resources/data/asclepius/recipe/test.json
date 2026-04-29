@@ -1,0 +1,25 @@
+{
+  "type": "asclepius:altar",
+  "base": {
+    "id": "minecraft:ender_pearl",
+    "count": 1,
+    "components": {
+      "minecraft:custom_name": "Test"
+    }
+  },
+  "catalyst": {
+    "id": "minecraft:blaze_powder",
+    "count": 1
+  },
+  "result": {
+    "id": "minecraft:ender_eye",
+    "count": 1,
+    "components": {
+      "minecraft:custom_name": "Ultimate Ender Eye",
+      "minecraft:enchantment_glint_override": true
+    }
+  },
+  "conditions": {
+    "required_levels": 30
+  }
+}

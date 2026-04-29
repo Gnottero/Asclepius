@@ -1,7 +1,6 @@
 package com.gnottero.asclepius.datagen;
 
 import com.gnottero.asclepius.mixin.client.ItemModelGeneratorsAccessor;
-import com.gnottero.asclepius.registry.AsclepiusBlocks;
 import com.gnottero.asclepius.registry.AsclepiusItems;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
@@ -35,7 +34,6 @@ public class AsclepiusModelProvider extends FabricModelProvider {
         var itemOutput = accessor.getItemModelOutput();
         var modelOutput = accessor.getModelOutput();
 
-        // Paxels — handheld flat items
         generateFlatHandheld(AsclepiusItems.WOODEN_PAXEL, itemOutput, modelOutput);
         generateFlatHandheld(AsclepiusItems.STONE_PAXEL, itemOutput, modelOutput);
         generateFlatHandheld(AsclepiusItems.COPPER_PAXEL, itemOutput, modelOutput);
@@ -44,13 +42,24 @@ public class AsclepiusModelProvider extends FabricModelProvider {
         generateFlatHandheld(AsclepiusItems.DIAMOND_PAXEL, itemOutput, modelOutput);
         generateFlatHandheld(AsclepiusItems.NETHERITE_PAXEL, itemOutput, modelOutput);
 
-        // Enderic key — flat generated
-        generateFlat(AsclepiusItems.ENDERIC_KEY, itemOutput, modelOutput);
+        generateFlatHandheld(AsclepiusItems.WOODEN_HAMMER, itemOutput, modelOutput);
+        generateFlatHandheld(AsclepiusItems.STONE_HAMMER, itemOutput, modelOutput);
+        generateFlatHandheld(AsclepiusItems.COPPER_HAMMER, itemOutput, modelOutput);
+        generateFlatHandheld(AsclepiusItems.IRON_HAMMER, itemOutput, modelOutput);
+        generateFlatHandheld(AsclepiusItems.GOLDEN_HAMMER, itemOutput, modelOutput);
+        generateFlatHandheld(AsclepiusItems.DIAMOND_HAMMER, itemOutput, modelOutput);
+        generateFlatHandheld(AsclepiusItems.NETHERITE_HAMMER, itemOutput, modelOutput);
 
-        // Teru teru bozu — uses existing hand-crafted block model
+        generateFlat(AsclepiusItems.ENDER_KEY, itemOutput, modelOutput);
+        generateFlat(AsclepiusItems.RECALL_EYE, itemOutput, modelOutput);
+
         itemOutput.accept(
-                AsclepiusBlocks.TERU_TERU_BOZU_ITEM,
+                AsclepiusItems.TERU_TERU_BOZU,
                 ItemModelUtils.plainModel(Identifier.fromNamespaceAndPath("asclepius", "block/teru_teru_bozu"))
+        );
+        itemOutput.accept(
+                AsclepiusItems.PALE_ALTAR,
+                ItemModelUtils.plainModel(Identifier.fromNamespaceAndPath("asclepius", "block/pale_altar"))
         );
     }
 

@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "asclepius:enderic_key"
+        "recipe": "asclepius:ender_key"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "asclepius:enderic_key"
+      "asclepius:ender_key"
     ]
   }
 }

@@ -1,6 +1,15 @@
 {
-  "item.asclepius.enderic_key": "Enderic Key",
-  "item.asclepius.enderic_key_description": "Can be used to unlock vaults in the End City Ship",
+  "itemgroup.asclepius": "Asclepius",
+  "item.asclepius.ender_key": "Ender Key",
+  "item.asclepius.ender_key_description": "Unlocks vaults found in End City Ships",
+  "item.asclepius.eye_of_recall": "Eye of Recall",
+  "item.asclepius.wooden_hammer": "Wooden Hammer",
+  "item.asclepius.stone_hammer": "Stone Hammer",
+  "item.asclepius.copper_hammer": "Copper Hammer",
+  "item.asclepius.iron_hammer": "Iron Hammer",
+  "item.asclepius.golden_hammer": "Golden Hammer",
+  "item.asclepius.diamond_hammer": "Diamond Hammer",
+  "item.asclepius.netherite_hammer": "Netherite Hammer",
   "item.asclepius.wooden_paxel": "Wooden Paxel",
   "item.asclepius.stone_paxel": "Stone Paxel",
   "item.asclepius.copper_paxel": "Copper Paxel",
@@ -8,8 +17,22 @@
   "item.asclepius.golden_paxel": "Golden Paxel",
   "item.asclepius.diamond_paxel": "Diamond Paxel",
   "item.asclepius.netherite_paxel": "Netherite Paxel",
-  "item.asclepius.paxel_description": "Use an empty offhand to interacts with blocks",
-  "block.asclepius.teru_teru_bozu": "Teru Teru Bozu",
+
+
   "item.asclepius.teru_teru_bozu": "Teru Teru Bozu",
-  "itemgroup.asclepius.name": "Asclepius"
+  "item.asclepius.pale_altar": "Pale Altar",
+  "block.asclepius.teru_teru_bozu": "Teru Teru Bozu",
+  "block.asclepius.pale_altar": "Pale Altar",
+
+
+  "itemgroup.asclepius.name": "Asclepius",
+  "item.asclepius.eye_of_recall_description": "Teleports to spawn point, consuming %s",
+  "item.asclepius.eye_of_recall_charge": "Charges: %s/%s",
+  "item.asclepius.eye_of_recall.no_respawn": "You have no respawn point set",
+  "item.asclepius.eye_of_recall.blocked": "Your respawn point is obstructed",
+  "item.asclepius.eye_of_recall.no_charges": "No charges remaining. Use an Ender Pearl to recharge",
+
+  "block.asclepius.altar.conditions_not_met": "The altar does not respond to your offering...",
+  "block.asclepius.altar.not_enough_xp": "You need %s levels to perform this ritual",
+  "block.asclepius.altar.no_compatible_enchants": "No enchantments can be transferred..."
 }

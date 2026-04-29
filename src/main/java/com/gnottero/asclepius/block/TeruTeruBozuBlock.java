@@ -15,6 +15,7 @@ import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -57,6 +58,12 @@ public class TeruTeruBozuBlock extends Block implements FactoryBlock, CustomBrea
     }
 
     @Override
+    public ParticleOptions getBreakingParticle(BlockState blockState) {
+        BlockState breakingState = Blocks.WHITE_WOOL.defaultBlockState();
+        return new BlockParticleOption(ParticleTypes.BLOCK, breakingState);
+    }
+
+    @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(BlockStateProperties.HORIZONTAL_FACING, BlockStateProperties.POWERED);
     }
@@ -72,20 +79,18 @@ public class TeruTeruBozuBlock extends Block implements FactoryBlock, CustomBrea
 
     @Override
     protected InteractionResult useItemOn(ItemStack itemStack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (itemStack.is(Items.SUNFLOWER) && (level.isRaining() || level.isThundering())) {
-            level.gameEvent(null, GameEvent.ENTITY_ACTION, pos);
-            itemStack.consume(1, player);
+        if (level.isClientSide()) return InteractionResult.PASS;
+        if (!level.isRaining() && !level.isThundering()) return InteractionResult.PASS;
+        if (!(player instanceof ServerPlayer)) return InteractionResult.PASS;
+        if (!itemStack.is(Items.SUNFLOWER)) return InteractionResult.PASS;
 
-            if (level instanceof ServerLevel serverLevel) {
-                serverLevel.getWeatherData().setClearWeatherTime(24000);
+        level.gameEvent(null, GameEvent.ENTITY_ACTION, pos);
+        itemStack.consume(1, player);
 
-                serverLevel.sendParticles(ParticleTypes.HAPPY_VILLAGER,
-                        pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
-                        10, 0.5D, 0.5D, 0.5D, 0.02D);
-            }
-            return InteractionResult.SUCCESS_SERVER;
-        }
-        return InteractionResult.PASS;
+        ((ServerLevel) level).getWeatherData().setClearWeatherTime(24000);
+        ((ServerLevel) level).sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 10, 0.5D, 0.5D, 0.5D, 0.02D);
+
+        return InteractionResult.SUCCESS_SERVER;
     }
 
     @Override
@@ -123,12 +128,6 @@ public class TeruTeruBozuBlock extends Block implements FactoryBlock, CustomBrea
     @Override
     public @Nullable ElementHolder createElementHolder(ServerLevel world, BlockPos pos, BlockState initialBlockState) {
         return new Model(pos, initialBlockState);
-    }
-
-    @Override
-    public ParticleOptions getBreakingParticle(BlockState blockState) {
-        BlockState breakingState = Blocks.WHITE_WOOL.defaultBlockState();
-        return new BlockParticleOption(ParticleTypes.BLOCK, breakingState);
     }
 
     @Override

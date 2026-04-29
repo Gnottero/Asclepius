@@ -16,5 +16,4 @@ public class AsclepiusLootTables {
     public static void registerAll() {
         Asclepius.LOGGER.info("[" + Asclepius.MOD_ID + "]> " + "Register Loot Tables");
     }
-
 }

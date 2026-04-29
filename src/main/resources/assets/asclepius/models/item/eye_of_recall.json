@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "asclepius:item/enderic_key"
+    "layer0": "asclepius:item/eye_of_recall"
   }
 }

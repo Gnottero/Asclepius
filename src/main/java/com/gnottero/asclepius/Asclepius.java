@@ -1,17 +1,12 @@
 package com.gnottero.asclepius;
 
-import com.gnottero.asclepius.item.PaxelItem;
+import com.gnottero.asclepius.registry.AsclepiusBlocks;
+import com.gnottero.asclepius.registry.AsclepiusBlockEntities;
+import com.gnottero.asclepius.registry.AsclepiusRecipes;
 import com.gnottero.asclepius.registry.*;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import net.fabricmc.api.ModInitializer;
 
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.item.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,12 +18,17 @@ public class Asclepius implements ModInitializer {
 	@Override
 	public void onInitialize() {
 
-		AsclepiusLootTables.registerAll();
-		AsclepiusTags.registerAll();
+		AsclepiusBlocks.registerAll();
+		AsclepiusBlockEntities.registerAll();
 
 		AsclepiusItems.registerAll();
-		AsclepiusBlocks.registerAll();
 		AsclepiusDispenserBehaviors.registerAll();
+		AsclepiusEvents.registerAll();
+		AsclepiusComponents.registerAll();
+
+		AsclepiusLootTables.registerAll();
+		AsclepiusTags.registerAll();
+		AsclepiusRecipes.registerAll();
 
 		PolymerResourcePackUtils.addModAssets(MOD_ID);
 		PolymerResourcePackUtils.markAsRequired();

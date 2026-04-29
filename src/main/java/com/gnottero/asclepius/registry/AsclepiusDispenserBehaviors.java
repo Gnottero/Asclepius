@@ -1,6 +1,5 @@
 package com.gnottero.asclepius.registry;
 
-import com.gnottero.asclepius.block.TeruTeruBozuBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.BlockSource;
@@ -18,7 +17,7 @@ import org.jspecify.annotations.NonNull;
 public class AsclepiusDispenserBehaviors {
 
     public static void registerAll() {
-        DispenseItemBehavior behavior = new DefaultDispenseItemBehavior() {
+        DispenseItemBehavior sunFlowerBehavior = new DefaultDispenseItemBehavior() {
             @Override
             public @NonNull ItemStack execute(@NonNull BlockSource source, @NonNull ItemStack stack) {
                 ServerLevel level = source.level();
@@ -26,21 +25,19 @@ public class AsclepiusDispenserBehaviors {
                 BlockPos pos = source.pos().relative(direction);
                 BlockState state = level.getBlockState(pos);
 
-                if (state.is(AsclepiusBlocks.TERU_TERU_BOZU_BLOCK) && (level.isRaining() || level.isThundering())) {
-                    level.gameEvent(null, GameEvent.ENTITY_ACTION, pos);
-                    stack.shrink(1);
-                    level.getWeatherData().setClearWeatherTime(24000);
+                if (!state.is(AsclepiusBlocks.TERU_TERU_BOZU)) return super.execute(source, stack);
+                if (!level.isRaining() && !level.isThundering()) return super.execute(source, stack);
 
-                    level.sendParticles(ParticleTypes.HAPPY_VILLAGER,
-                            pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
-                            10, 0.5D, 0.5D, 0.5D, 0.02D);
-                    
-                    return stack;
-                }
-                return super.execute(source, stack);
+                level.gameEvent(null, GameEvent.ENTITY_ACTION, pos);
+                stack.shrink(1);
+                level.getWeatherData().setClearWeatherTime(24000);
+
+                level.sendParticles(ParticleTypes.HAPPY_VILLAGER, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D, 10, 0.5D, 0.5D, 0.5D, 0.02D);
+
+                return stack;
             }
         };
 
-        DispenserBlock.registerBehavior(Items.SUNFLOWER, behavior);
+        DispenserBlock.registerBehavior(Items.SUNFLOWER, sunFlowerBehavior);
     }
 }

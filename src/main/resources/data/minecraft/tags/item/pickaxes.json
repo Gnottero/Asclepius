@@ -1,5 +1,12 @@
 {
   "values": [
+    "asclepius:wooden_hammer",
+    "asclepius:stone_hammer",
+    "asclepius:copper_hammer",
+    "asclepius:iron_hammer",
+    "asclepius:golden_hammer",
+    "asclepius:diamond_hammer",
+    "asclepius:netherite_hammer",
     "asclepius:wooden_paxel",
     "asclepius:stone_paxel",
     "asclepius:copper_paxel",

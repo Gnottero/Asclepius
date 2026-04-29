@@ -10,7 +10,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.recipes.*;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +29,7 @@ public class AsclepiusRecipeProvider extends FabricRecipeProvider {
                 HolderGetter<Item> itemLookup = registries.lookupOrThrow(Registries.ITEM);
 
                 // Teru Teru Bozu
-                ShapedRecipeBuilder.shaped(itemLookup, RecipeCategory.DECORATIONS, AsclepiusBlocks.TERU_TERU_BOZU_ITEM)
+                ShapedRecipeBuilder.shaped(itemLookup, RecipeCategory.DECORATIONS, AsclepiusBlocks.TERU_TERU_BOZU)
                         .pattern(" W ")
                         .pattern("WSW")
                         .pattern(" W ")
@@ -40,12 +39,25 @@ public class AsclepiusRecipeProvider extends FabricRecipeProvider {
                         .unlockedBy(getHasName(Items.STRING), has(Items.STRING))
                         .save(exporter);
 
-                // Enderic Key
-                ShapedRecipeBuilder.shaped(itemLookup, RecipeCategory.MISC, AsclepiusItems.ENDERIC_KEY)
+                // Ender Key
+                ShapedRecipeBuilder.shaped(itemLookup, RecipeCategory.MISC, AsclepiusItems.ENDER_KEY)
+                        .pattern("S")
+                        .pattern("K")
                         .pattern("E")
-                        .pattern("C")
+                        .define('S', Items.SHULKER_SHELL)
+                        .define('K', Items.TRIAL_KEY)
                         .define('E', Items.ENDER_EYE)
-                        .define('C', Items.CLOCK)
+                        .unlockedBy(getHasName(Items.ENDER_EYE), has(Items.ENDER_EYE))
+                        .save(exporter);
+
+                // Eye of Recall
+                ShapedRecipeBuilder.shaped(itemLookup, RecipeCategory.MISC, AsclepiusItems.RECALL_EYE)
+                        .pattern("LIL")
+                        .pattern("IEI")
+                        .pattern("LIL")
+                        .define('L', Items.LAPIS_LAZULI)
+                        .define('I', Items.IRON_INGOT)
+                        .define('E', Items.ENDER_EYE)
                         .unlockedBy(getHasName(Items.ENDER_EYE), has(Items.ENDER_EYE))
                         .save(exporter);
 

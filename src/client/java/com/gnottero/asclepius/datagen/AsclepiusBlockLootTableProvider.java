@@ -15,6 +15,7 @@ public class AsclepiusBlockLootTableProvider extends FabricBlockLootSubProvider 
 
     @Override
     public void generate() {
-        this.dropSelf(AsclepiusBlocks.TERU_TERU_BOZU_BLOCK);
+        this.dropSelf(AsclepiusBlocks.TERU_TERU_BOZU);
+        this.dropSelf(AsclepiusBlocks.PALE_ALTAR);
     }
 }

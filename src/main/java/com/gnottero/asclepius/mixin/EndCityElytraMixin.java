@@ -45,7 +45,7 @@ public abstract class EndCityElytraMixin extends StructurePiece {
                     AsclepiusLootTables.VAULT_END_SHIP,
                     4.0,
                     4.5,
-                    AsclepiusItems.ENDERIC_KEY.getDefaultInstance(),
+                    AsclepiusItems.ENDER_KEY.getDefaultInstance(),
                     Optional.empty()
             );
             vault.setConfig(config);
