@@ -33,14 +33,6 @@ public class PlayerXpUtils {
         return 9 * level - 158;
     }
 
-    public static int xpPointsToLevels(int points) {
-        int level = 0;
-        while (getTotalXpForLevel(level + 1) <= points) {
-            level++;
-        }
-        return level;
-    }
-
     /**
      * Convenience method that takes a Player directly.
      */

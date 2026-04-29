@@ -1,10 +1,7 @@
 package com.gnottero.asclepius.registry;
 
 import com.gnottero.asclepius.Asclepius;
-import com.gnottero.asclepius.item.EnderKeyItem;
-import com.gnottero.asclepius.item.HammerItem;
-import com.gnottero.asclepius.item.PaxelItem;
-import com.gnottero.asclepius.item.EyeOfRecallItem;
+import com.gnottero.asclepius.item.*;
 import eu.pb4.factorytools.api.item.FactoryBlockItem;
 import eu.pb4.polymer.core.api.block.PolymerBlock;
 import eu.pb4.polymer.core.api.item.PolymerCreativeModeTabUtils;
@@ -23,8 +20,8 @@ import java.util.function.Function;
 
 public class AsclepiusItems {
 
-    public static Item ENDER_KEY = registerItem(Identifier.fromNamespaceAndPath(Asclepius.MOD_ID, "ender_key"),
-            properties -> new EnderKeyItem(properties.fireResistant()));
+    public static Item ENDER_KEY = registerItem(Identifier.fromNamespaceAndPath(Asclepius.MOD_ID, "ender_key"), properties -> new EnderKeyItem(properties.fireResistant()));
+    public static Item FOX_AMULET = registerItem(Identifier.fromNamespaceAndPath(Asclepius.MOD_ID, "fox_amulet"), properties -> new FoxAmulet(properties.fireResistant()));
 
     public static Item WOODEN_HAMMER  = registerTool("wooden_hammer",  ToolMaterial.WOOD,      ItemTags.WOODEN_TOOL_MATERIALS,    1.0F, -2.8F, false, HammerItem::new);
     public static Item STONE_HAMMER  = registerTool("stone_hammer",  ToolMaterial.STONE,      ItemTags.STONE_TOOL_MATERIALS,    1.0F, -2.8F, false, HammerItem::new);
@@ -101,6 +98,7 @@ public class AsclepiusItems {
                             entries.accept(NETHERITE_PAXEL);
 
                             entries.accept(RECALL_EYE);
+                            entries.accept(FOX_AMULET);
 
                             entries.accept(TERU_TERU_BOZU);
                             entries.accept(PALE_ALTAR);

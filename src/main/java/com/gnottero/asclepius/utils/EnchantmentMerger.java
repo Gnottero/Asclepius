@@ -34,11 +34,11 @@ public class EnchantmentMerger {
         boolean isAnyEnchantmentNotCompatible = false;
 
         for (Object2IntMap.Entry<Holder<Enchantment>> entry  :additionalEnchantments.entrySet()) {
-            Holder<Enchantment> enchantmentHolder = (Holder<Enchantment>) entry.getKey();
+            Holder<Enchantment> enchantmentHolder = entry.getKey();
             int current = enchantments.getLevel(enchantmentHolder);
             int level = entry.getIntValue();
-            level = current == level ? level + 1 : Math.max(current, level);
             Enchantment enchantment = enchantmentHolder.value();
+            level = (current == level && enchantment.getMaxLevel() != 1) ? level + 1 : Math.max(current, level);
             boolean compatible = enchantment.canEnchant(base);
 
             if (player.hasInfiniteMaterials() || base.is(Items.ENCHANTED_BOOK)) {
@@ -56,7 +56,7 @@ public class EnchantmentMerger {
                 isAnyEnchantmentNotCompatible = true;
             } else {
                 isAnyEnchantmentCompatible = true;
-                if (level > MAX_LEVEL && enchantment.getMaxLevel() != 1) {
+                if (level > MAX_LEVEL) {
                     level = MAX_LEVEL;
                 }
 
@@ -74,68 +74,5 @@ public class EnchantmentMerger {
         result.set(DataComponents.REPAIR_COST, finalPrice);
         EnchantmentHelper.setEnchantments(result, enchantments.toImmutable());
         return Optional.of(new MergeResult(result, finalPrice));
-    }
-
-//    public static Optional<MergeResult> tryMerge(ItemStack base, ItemStack catalyst) {
-//        if (base.isEmpty() || catalyst.isEmpty()) return Optional.empty();
-//
-//        ItemEnchantments catalystEnchants = catalyst.get(DataComponents.STORED_ENCHANTMENTS);
-//        if (catalystEnchants == null || catalystEnchants.isEmpty()) return Optional.empty();
-//        if (!base.isEnchantable() && !base.has(DataComponents.ENCHANTMENTS) && !base.has(DataComponents.STORED_ENCHANTMENTS)) return Optional.empty();
-//
-//        ItemEnchantments baseEnchants = getEnchantments(base);
-//        ItemEnchantments.Mutable merged = new ItemEnchantments.Mutable(baseEnchants);
-//        int xpCost = 0;
-//        boolean changed = false;
-//
-//        for (var entry : catalystEnchants.entrySet()) {
-//            Holder<Enchantment> enchHolder = entry.getKey();
-//            Enchantment enchantment = enchHolder.value();
-//            int catalystLevel = entry.getValue();
-//
-//            if (!enchantment.canEnchant(base) && !base.has(DataComponents.STORED_ENCHANTMENTS)) continue;
-//
-//            if (catalystEnchants.entrySet().stream()
-//                    .filter(e -> !e.getKey().equals(enchHolder))
-//                    .anyMatch(e -> !Enchantment.areCompatible(enchHolder, e.getKey()))) continue;
-//
-//            if (!baseEnchants.entrySet().stream()
-//                    .filter(e -> !e.getKey().equals(enchHolder))
-//                    .allMatch(e -> Enchantment.areCompatible(enchHolder, e.getKey()))) continue;
-//
-//            int baseLevel = merged.getLevel(enchHolder);
-//            if (enchantment.getMaxLevel() == 1 && baseLevel >= 1) continue;
-//            if (baseLevel >= MAX_LEVEL) continue;
-//
-//            int newLevel = Math.min(baseLevel == catalystLevel ? baseLevel + 1 : Math.max(baseLevel, catalystLevel), MAX_LEVEL);
-//            if (newLevel <= baseLevel) continue;
-//
-//            merged.set(enchHolder, newLevel);
-//            int overCap = Math.max(0, newLevel - enchantment.getMaxLevel());
-//
-//            xpCost += (Math.max(1, enchantment.getAnvilCost()) * newLevel * (1 + overCap)) * 30;
-//            changed = true;
-//        }
-//
-//        if (!changed) return Optional.empty();
-//
-//        ItemStack output = base.copy();
-//        setEnchantments(output, merged.toImmutable());
-//        return Optional.of(new MergeResult(output, xpCost));
-//    }
-
-    private static ItemEnchantments getEnchantments(ItemStack stack) {
-        ItemEnchantments stored = stack.get(DataComponents.STORED_ENCHANTMENTS);
-        if (stored != null && !stored.isEmpty()) return stored;
-        ItemEnchantments regular = stack.get(DataComponents.ENCHANTMENTS);
-        return regular != null ? regular : ItemEnchantments.EMPTY;
-    }
-
-    private static void setEnchantments(ItemStack stack, ItemEnchantments enchantments) {
-        if (stack.has(DataComponents.STORED_ENCHANTMENTS)) {
-            stack.set(DataComponents.STORED_ENCHANTMENTS, enchantments);
-        } else {
-            stack.set(DataComponents.ENCHANTMENTS, enchantments);
-        }
     }
 }

@@ -51,6 +51,7 @@ public class AsclepiusModelProvider extends FabricModelProvider {
         generateFlatHandheld(AsclepiusItems.NETHERITE_HAMMER, itemOutput, modelOutput);
 
         generateFlat(AsclepiusItems.ENDER_KEY, itemOutput, modelOutput);
+        generateFlat(AsclepiusItems.FOX_AMULET, itemOutput, modelOutput);
         generateFlat(AsclepiusItems.RECALL_EYE, itemOutput, modelOutput);
 
         itemOutput.accept(

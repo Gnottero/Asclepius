@@ -22,12 +22,10 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -94,16 +92,16 @@ public class PaleAltarBlock extends BaseEntityBlock implements FactoryBlock, Cus
         if (level.isClientSide()) return InteractionResult.SUCCESS;
         if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
         if (!(level.getBlockEntity(pos) instanceof PaleAltarBlockEntity altar)) return InteractionResult.PASS;
+        if (!(player instanceof ServerPlayer)) return InteractionResult.PASS;
 
         if (stack.isEmpty()) {
             ItemStack stored = altar.removeStoredItem();
             if (stored.isEmpty()) return InteractionResult.PASS;
             player.getInventory().add(stored);
 
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.connection.send(new ClientboundBlockUpdatePacket(level, pos));
-                serverPlayer.inventoryMenu.sendAllDataToRemote();
-            }
+            ((ServerPlayer) player).connection.send(new ClientboundBlockUpdatePacket(level, pos));
+            player.inventoryMenu.sendAllDataToRemote();
+
             return InteractionResult.SUCCESS_SERVER;
         }
 
@@ -114,20 +112,22 @@ public class PaleAltarBlock extends BaseEntityBlock implements FactoryBlock, Cus
         if (altar.getStoredItem().isEmpty()) {
             altar.setStoredItem(stack.split(1));
 
-            if (player instanceof ServerPlayer serverPlayer) {
-                serverPlayer.connection.send(new ClientboundBlockUpdatePacket(level, pos));
-                serverPlayer.inventoryMenu.sendAllDataToRemote();
-            }
+            ((ServerPlayer) player).connection.send(new ClientboundBlockUpdatePacket(level, pos));
+            player.inventoryMenu.sendAllDataToRemote();
+
             return InteractionResult.SUCCESS_SERVER;
         }
 
         return InteractionResult.PASS;
     }
 
+
     private InteractionResult attempCraft(PaleAltarBlockEntity altar, ItemStack stack, Player player, Level level, BlockPos pos) {
         ItemStack altarItem = altar.getStoredItem();
         ItemStack offhand = player.getOffhandItem();
         boolean isCreative = player.isCreative();
+        int requiredExperience = 0;
+        int catalystAmount = 0;
 
         AltarRecipeInput input = new AltarRecipeInput(altarItem, offhand);
         Optional<RecipeHolder<AltarRecipe>> match = ((ServerLevel) level).recipeAccess()
@@ -142,18 +142,13 @@ public class PaleAltarBlock extends BaseEntityBlock implements FactoryBlock, Cus
             }
 
             altar.setStoredItem(recipe.assemble(input));
-
             if (!isCreative) {
-                offhand.shrink(recipe.getCatalystItem().count());
-                stack.hurtAndBreak(1, player, InteractionHand.MAIN_HAND);
-                int requiredLevels = recipe.getConditions().requiredLevels();
-                if (requiredLevels > 0) player.giveExperiencePoints(-PlayerXpUtils.getTotalXpForLevel(requiredLevels));
+                requiredExperience = PlayerXpUtils.getTotalXpForLevel(recipe.getConditions().requiredLevels());
+                catalystAmount = recipe.getCatalystItem().count();
             }
 
-            playEffects(level, pos, SoundEvents.BEACON_ACTIVATE, ParticleTypes.OMINOUS_SPAWNING);
-
         } else if (offhand.has(DataComponents.STORED_ENCHANTMENTS) && !altarItem.isEmpty()) {
-            Optional<EnchantmentMerger.MergeResult> mergeResult = EnchantmentMerger.tryMerge(altarItem, offhand, player);
+            Optional<EnchantmentMerger.MergeResult> mergeResult = EnchantmentMerger.tryMerge(altarItem, offhand, (ServerPlayer) player);
 
             if (mergeResult.isEmpty()) {
                 player.sendOverlayMessage(Component.translatable("block.asclepius.altar.no_compatible_enchants"));
@@ -161,9 +156,10 @@ public class PaleAltarBlock extends BaseEntityBlock implements FactoryBlock, Cus
             }
 
             EnchantmentMerger.MergeResult merge = mergeResult.get();
+            int xpCostInPoints = PlayerXpUtils.getTotalXpForLevel(merge.xpCost());
+            player.sendSystemMessage(Component.literal(String.valueOf(merge.xpCost())));
 
-            if (!isCreative && PlayerXpUtils.getTotalXp(player) < merge.xpCost()) {
-                player.sendSystemMessage(Component.literal(String.valueOf(merge.xpCost())));
+            if (!isCreative && PlayerXpUtils.getTotalXp(player) < xpCostInPoints) {
                 player.sendOverlayMessage(Component.translatable("block.asclepius.altar.not_enough_xp", merge.xpCost()));
                 return InteractionResult.PASS;
             }
@@ -171,30 +167,29 @@ public class PaleAltarBlock extends BaseEntityBlock implements FactoryBlock, Cus
             altar.setStoredItem(merge.output());
 
             if (!isCreative) {
-                offhand.shrink(1);
-                stack.hurtAndBreak(1, player, InteractionHand.MAIN_HAND);
-                player.giveExperiencePoints(-merge.xpCost());
+                requiredExperience = xpCostInPoints;
+                catalystAmount = 1;
             }
-
-            playEffects(level, pos, SoundEvents.ANVIL_USE, ParticleTypes.ENCHANT);
 
         } else {
             return InteractionResult.PASS;
         }
 
-        if (player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.connection.send(new ClientboundBlockUpdatePacket(level, pos));
-            serverPlayer.inventoryMenu.sendAllDataToRemote();
+        if (!isCreative) {
+            offhand.shrink(catalystAmount);
+            stack.hurtAndBreak(1, player, InteractionHand.MAIN_HAND);
+            if (requiredExperience > 0) player.giveExperiencePoints(-requiredExperience);
         }
+
+        level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0f, 1.0f);
+        ((ServerLevel) level).sendParticles(ParticleTypes.OMINOUS_SPAWNING, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, 30, 0.3, 1.0, 0.3, 0.05);
+
+        ((ServerPlayer) player).connection.send(new ClientboundBlockUpdatePacket(level, pos));
+        player.inventoryMenu.sendAllDataToRemote();
+
         return InteractionResult.SUCCESS_SERVER;
     }
 
-    private void playEffects(Level level, BlockPos pos, SoundEvent sound, SimpleParticleType particle) {
-        level.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0f, 1.0f);
-        ((ServerLevel) level).sendParticles(particle,
-                pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5,
-                30, 0.3, 1.0, 0.3, 0.05);
-    }
 
     public static final class Model extends BlockModel {
 
