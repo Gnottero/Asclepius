@@ -18,14 +18,18 @@ public class AsclepiusBlockTagProvider extends FabricTagsProvider.BlockTagsProvi
     @Override
     protected void addTags(HolderLookup.Provider wrapperLookup) {
         builder(BlockTags.MINEABLE_WITH_PICKAXE)
-                .add(AsclepiusBlocks.TERU_TERU_BOZU.builtInRegistryHolder().key());
+                .add(AsclepiusBlocks.TERU_TERU_BOZU.builtInRegistryHolder().key())
+                .add(AsclepiusBlocks.SHALE.builtInRegistryHolder().key())
+                .add(AsclepiusBlocks.PACKED_SHALE.builtInRegistryHolder().key())
+                .add(AsclepiusBlocks.CHUNK_LOADER.builtInRegistryHolder().key());
 
         builder(BlockTags.MINEABLE_WITH_AXE)
                 .add(AsclepiusBlocks.TERU_TERU_BOZU.builtInRegistryHolder().key())
                 .add(AsclepiusBlocks.PALE_ALTAR.builtInRegistryHolder().key());
 
         builder(BlockTags.MINEABLE_WITH_SHOVEL)
-                .add(AsclepiusBlocks.TERU_TERU_BOZU.builtInRegistryHolder().key());
+                .add(AsclepiusBlocks.TERU_TERU_BOZU.builtInRegistryHolder().key())
+                .add(AsclepiusBlocks.VOLCANIC_ASH.builtInRegistryHolder().key());
 
         builder(BlockTags.MINEABLE_WITH_HOE)
                 .add(AsclepiusBlocks.TERU_TERU_BOZU.builtInRegistryHolder().key());

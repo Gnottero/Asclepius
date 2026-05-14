@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "A": "minecraft:amethyst_shard",
+    "B": "minecraft:amethyst_block",
+    "C": "minecraft:creaking_heart",
+    "M": "minecraft:pale_moss_block",
+    "P": "minecraft:pale_oak_log"
+  },
+  "pattern": [
+    "AMA",
+    "BCB",
+    "PPP"
+  ],
+  "result": {
+    "id": "asclepius:pale_altar"
+  }
+}

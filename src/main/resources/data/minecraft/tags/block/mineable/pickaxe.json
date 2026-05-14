@@ -1,5 +1,8 @@
 {
   "values": [
-    "asclepius:teru_teru_bozu"
+    "asclepius:teru_teru_bozu",
+    "asclepius:shale",
+    "asclepius:packed_shale",
+    "asclepius:chunk_loader"
   ]
 }

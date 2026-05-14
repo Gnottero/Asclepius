@@ -4,6 +4,7 @@ import com.gnottero.asclepius.registry.AsclepiusItems;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.tags.ItemTags;
 
 import java.util.concurrent.CompletableFuture;
@@ -51,5 +52,26 @@ public class AsclepiusItemTagProvider extends FabricTagsProvider.ItemTagsProvide
                 .add(AsclepiusItems.GOLDEN_PAXEL.builtInRegistryHolder().key())
                 .add(AsclepiusItems.DIAMOND_PAXEL.builtInRegistryHolder().key())
                 .add(AsclepiusItems.NETHERITE_PAXEL.builtInRegistryHolder().key());
+
+        builder(ItemTags.MELEE_WEAPON_ENCHANTABLE)
+                .add(AsclepiusItems.WOODEN_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.STONE_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.COPPER_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.IRON_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.GOLDEN_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.DIAMOND_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.NETHERITE_PAXEL.builtInRegistryHolder().key());
+
+        builder(ItemTags.SWEEPING_ENCHANTABLE)
+                .add(AsclepiusItems.WOODEN_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.STONE_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.COPPER_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.IRON_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.GOLDEN_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.DIAMOND_PAXEL.builtInRegistryHolder().key())
+                .add(AsclepiusItems.NETHERITE_PAXEL.builtInRegistryHolder().key());
+
+        builder(ItemTags.DURABILITY_ENCHANTABLE)
+                .add(AsclepiusItems.FOX_AMULET.builtInRegistryHolder().key());
     }
 }

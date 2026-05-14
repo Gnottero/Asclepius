@@ -14,13 +14,15 @@ import org.jetbrains.annotations.Nullable;
 
 public class AltarRecipe implements Recipe<AltarRecipeInput> {
 
+    private final boolean consumeCatalyst;
     private final String group;
     private final AltarRecipeConditions conditions;
     private final IngredientWithComponents altarItem;
     private final IngredientWithComponents catalyst;
     private final ItemStackTemplate result;
 
-    public AltarRecipe(String group, IngredientWithComponents altarItem, IngredientWithComponents catalyst, ItemStackTemplate result, AltarRecipeConditions conditions) {
+    public AltarRecipe(boolean consumeCatalyst, String group, IngredientWithComponents altarItem, IngredientWithComponents catalyst, ItemStackTemplate result, AltarRecipeConditions conditions) {
+        this.consumeCatalyst = consumeCatalyst;
         this.group = group;
         this.conditions = conditions;
         this.altarItem = altarItem;
@@ -39,9 +41,7 @@ public class AltarRecipe implements Recipe<AltarRecipeInput> {
                 ? input.altarItem().copyWithCount(result.count())
                 : result.create().copy();
 
-        // Apply all components except enchantments
-        DataComponentPatch filtered = DataComponentPatch.builder()
-                .build(); // start empty
+
         result.components().entrySet().stream()
                 .filter(e -> e.getKey() != DataComponents.STORED_ENCHANTMENTS
                         && e.getKey() != DataComponents.ENCHANTMENTS)
@@ -104,7 +104,9 @@ public class AltarRecipe implements Recipe<AltarRecipeInput> {
         return this.group;
     }
 
-    public AltarRecipeConditions getConditions() { return conditions; }
+    public AltarRecipeConditions getConditions() { return this.conditions; }
+
+    public boolean consumeCatalyst() { return this.consumeCatalyst; }
 
     public boolean checkConditions(Player player, Level level) { return conditions.check(player, level); }
 

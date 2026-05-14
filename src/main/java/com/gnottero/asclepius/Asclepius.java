@@ -1,8 +1,5 @@
 package com.gnottero.asclepius;
 
-import com.gnottero.asclepius.registry.AsclepiusBlocks;
-import com.gnottero.asclepius.registry.AsclepiusBlockEntities;
-import com.gnottero.asclepius.registry.AsclepiusRecipes;
 import com.gnottero.asclepius.registry.*;
 import eu.pb4.polymer.resourcepack.api.PolymerResourcePackUtils;
 import net.fabricmc.api.ModInitializer;

@@ -17,5 +17,9 @@ public class AsclepiusBlockLootTableProvider extends FabricBlockLootSubProvider 
     public void generate() {
         this.dropSelf(AsclepiusBlocks.TERU_TERU_BOZU);
         this.dropSelf(AsclepiusBlocks.PALE_ALTAR);
+        this.dropSelf(AsclepiusBlocks.VOLCANIC_ASH);
+        this.dropSelf(AsclepiusBlocks.SHALE);
+        this.dropSelf(AsclepiusBlocks.PACKED_SHALE);
+        this.dropSelf(AsclepiusBlocks.CHUNK_LOADER);
     }
 }

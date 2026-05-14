@@ -22,8 +22,18 @@
 
   "item.asclepius.teru_teru_bozu": "Teru Teru Bozu",
   "item.asclepius.pale_altar": "Pale Altar",
+  "item.asclepius.volcanic_ash": "Volcanic Ash",
+  "item.asclepius.shale": "Shale",
+  "item.asclepius.packed_shale": "Packed Shale",
+
   "block.asclepius.teru_teru_bozu": "Teru Teru Bozu",
   "block.asclepius.pale_altar": "Pale Altar",
+  "block.asclepius.volcanic_ash": "Volcanic Ash",
+  "block.asclepius.shale": "Shale",
+  "block.asclepius.packed_shale": "Packed Shale",
+  "block.asclepius.chunk_loader": "Chunk Loader",
+
+  "item.asclepius.chunk_loader": "Chunk Loader",
 
 
   "itemgroup.asclepius.name": "Asclepius",

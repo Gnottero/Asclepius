@@ -1,4 +1,4 @@
-package com.gnottero.asclepius.utils;
+package com.gnottero.asclepius.event;
 
 import com.gnottero.asclepius.item.HammerItem;
 import net.minecraft.core.BlockPos;
@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-public class HammerUtils {
+public class HammerBreakHandler {
     public static boolean onHammerBreaksBlock(Level level, Player player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity) {
         ItemStack itemStack = player.getMainHandItem();
         if (!(itemStack.getItem() instanceof HammerItem)) return true;

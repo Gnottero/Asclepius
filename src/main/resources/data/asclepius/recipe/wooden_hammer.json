@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "B": "#minecraft:planks",
+    "P": "minecraft:wooden_pickaxe",
+    "T": "minecraft:stick"
+  },
+  "pattern": [
+    "BPB",
+    " T ",
+    " T "
+  ],
+  "result": {
+    "id": "asclepius:wooden_hammer"
+  }
+}

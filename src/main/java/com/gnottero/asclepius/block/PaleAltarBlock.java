@@ -32,6 +32,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -47,6 +48,9 @@ import org.jspecify.annotations.Nullable;
 import java.util.Optional;
 
 public class PaleAltarBlock extends BaseEntityBlock implements FactoryBlock, CustomBreakingParticleBlock {
+
+    private static final Component MSG_CONDITIONS_NOT_MET = Component.translatable("block.asclepius.altar.conditions_not_met");
+    private static final Component MSG_NO_COMPATIBLE_ENCHANTS = Component.translatable("block.asclepius.altar.no_compatible_enchants");
 
     public PaleAltarBlock(Properties properties) {
         super(properties);
@@ -89,116 +93,132 @@ public class PaleAltarBlock extends BaseEntityBlock implements FactoryBlock, Cus
 
     @Override
     public InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (level.isClientSide()) return InteractionResult.SUCCESS;
-        if (hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
-        if (!(level.getBlockEntity(pos) instanceof PaleAltarBlockEntity altar)) return InteractionResult.PASS;
-        if (!(player instanceof ServerPlayer)) return InteractionResult.PASS;
+        if (level.isClientSide() || hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
+
+        if (!(level.getBlockEntity(pos) instanceof PaleAltarBlockEntity altar) || !(player instanceof ServerPlayer serverPlayer)) {
+            return InteractionResult.PASS;
+        }
 
         if (stack.isEmpty()) {
             ItemStack stored = altar.removeStoredItem();
-            if (stored.isEmpty()) return InteractionResult.PASS;
-            player.getInventory().add(stored);
-
-            ((ServerPlayer) player).connection.send(new ClientboundBlockUpdatePacket(level, pos));
-            player.inventoryMenu.sendAllDataToRemote();
-
-            return InteractionResult.SUCCESS_SERVER;
+            if (!stored.isEmpty()) {
+                player.getInventory().add(stored);
+                syncBlock(serverPlayer, level, pos);
+                return InteractionResult.SUCCESS_SERVER;
+            }
+            return InteractionResult.PASS;
         }
 
         if (stack.getItem() instanceof HammerItem && !altar.getStoredItem().isEmpty() && level.canSeeSky(pos.above())) {
-            return attempCraft(altar, stack, player, level, pos);
+            return attemptCraft(altar, stack, serverPlayer, level, pos);
         }
 
         if (altar.getStoredItem().isEmpty()) {
             altar.setStoredItem(stack.split(1));
-
-            ((ServerPlayer) player).connection.send(new ClientboundBlockUpdatePacket(level, pos));
-            player.inventoryMenu.sendAllDataToRemote();
-
+            syncBlock(serverPlayer, level, pos);
             return InteractionResult.SUCCESS_SERVER;
         }
 
         return InteractionResult.PASS;
     }
 
+    private static void syncBlock(ServerPlayer player, Level level, BlockPos pos) {
+        player.connection.send(new ClientboundBlockUpdatePacket(level, pos));
+        player.inventoryMenu.sendAllDataToRemote();
+    }
 
-    private InteractionResult attempCraft(PaleAltarBlockEntity altar, ItemStack stack, Player player, Level level, BlockPos pos) {
+    private InteractionResult attemptCraft(PaleAltarBlockEntity altar, ItemStack hammer, ServerPlayer player, Level level, BlockPos pos) {
         ItemStack altarItem = altar.getStoredItem();
         ItemStack offhand = player.getOffhandItem();
         boolean isCreative = player.isCreative();
-        int requiredExperience = 0;
+
+        boolean consumeCatalyst = true;
+        int requiredLevels = 0;
+        int requiredXPPoints = 0;
         int catalystAmount = 0;
+        ItemStack result;
 
         AltarRecipeInput input = new AltarRecipeInput(altarItem, offhand);
-        Optional<RecipeHolder<AltarRecipe>> match = ((ServerLevel) level).recipeAccess()
+        Optional<RecipeHolder<AltarRecipe>> recipeMatch = ((ServerLevel) level).recipeAccess()
                 .getRecipeFor(AsclepiusRecipes.ALTAR_TYPE, input, level);
 
-        if (match.isPresent()) {
-            AltarRecipe recipe = match.get().value();
-
-            if (!isCreative && !recipe.checkConditions(player, level)) {
-                player.sendOverlayMessage(Component.translatable("block.asclepius.altar.conditions_not_met"));
-                return InteractionResult.PASS;
-            }
-
-            altar.setStoredItem(recipe.assemble(input));
+        if (recipeMatch.isPresent()) {
+            AltarRecipe recipe = recipeMatch.get().value();
             if (!isCreative) {
-                requiredExperience = PlayerXpUtils.getTotalXpForLevel(recipe.getConditions().requiredLevels());
+                requiredLevels = recipe.getConditions().requiredLevels();
+                requiredXPPoints = PlayerXpUtils.getTotalXpForLevel(requiredLevels);
                 catalystAmount = recipe.getCatalystItem().count();
+                consumeCatalyst = recipe.consumeCatalyst();
             }
+            result = recipe.assemble(input);
+        }
+        else {
+            boolean offhandHasEnchants = (offhand.has(DataComponents.ENCHANTMENTS) && !offhand.get(DataComponents.ENCHANTMENTS).isEmpty()) ||
+                    (offhand.has(DataComponents.STORED_ENCHANTMENTS) && !offhand.get(DataComponents.STORED_ENCHANTMENTS).isEmpty());
 
-        } else if (offhand.has(DataComponents.STORED_ENCHANTMENTS) && !altarItem.isEmpty()) {
-            Optional<EnchantmentMerger.MergeResult> mergeResult = EnchantmentMerger.tryMerge(altarItem, offhand, (ServerPlayer) player);
-
-            if (mergeResult.isEmpty()) {
-                player.sendOverlayMessage(Component.translatable("block.asclepius.altar.no_compatible_enchants"));
-                return InteractionResult.PASS;
-            }
-
-            EnchantmentMerger.MergeResult merge = mergeResult.get();
-            int xpCostInPoints = PlayerXpUtils.getTotalXpForLevel(merge.xpCost());
-            player.sendSystemMessage(Component.literal(String.valueOf(merge.xpCost())));
-
-            if (!isCreative && PlayerXpUtils.getTotalXp(player) < xpCostInPoints) {
-                player.sendOverlayMessage(Component.translatable("block.asclepius.altar.not_enough_xp", merge.xpCost()));
-                return InteractionResult.PASS;
-            }
-
-            altar.setStoredItem(merge.output());
-
-            if (!isCreative) {
-                requiredExperience = xpCostInPoints;
+            if (!altarItem.isEmpty() && offhandHasEnchants && (altarItem.is(offhand.getItem()) || offhand.is(Items.ENCHANTED_BOOK))) {
+                Optional<EnchantmentMerger.MergeResult> mergeResult = EnchantmentMerger.tryMerge(altarItem, offhand, player);
+                if (mergeResult.isEmpty()) {
+                    player.sendOverlayMessage(MSG_NO_COMPATIBLE_ENCHANTS);
+                    return InteractionResult.PASS;
+                }
+                EnchantmentMerger.MergeResult merge = mergeResult.get();
+                requiredLevels = merge.xpCost();
+                requiredXPPoints = PlayerXpUtils.getTotalXpForLevel(requiredLevels);
                 catalystAmount = 1;
+                result = merge.output();
+            } else {
+                return InteractionResult.PASS;
             }
+        }
 
-        } else {
+        if (!isCreative && PlayerXpUtils.getTotalXp(player) < requiredXPPoints) {
+            player.sendOverlayMessage(Component.translatable("block.asclepius.altar.not_enough_xp", requiredLevels));
             return InteractionResult.PASS;
         }
 
-        if (!isCreative) {
-            offhand.shrink(catalystAmount);
-            stack.hurtAndBreak(1, player, InteractionHand.MAIN_HAND);
-            if (requiredExperience > 0) player.giveExperiencePoints(-requiredExperience);
+        if (recipeMatch.isPresent() && !isCreative) {
+            AltarRecipe recipe = recipeMatch.get().value();
+            if (!recipe.checkConditions(player, level)) {
+                player.sendOverlayMessage(MSG_CONDITIONS_NOT_MET);
+                return InteractionResult.PASS;
+            }
         }
 
+        if (!isCreative) {
+            if (consumeCatalyst) {
+                offhand.shrink(catalystAmount);
+            } else if (offhand.isDamageableItem()) {
+                offhand.hurtAndBreak(1, player, InteractionHand.OFF_HAND);
+            }
+            hammer.hurtAndBreak(1, player, InteractionHand.MAIN_HAND);
+            if (requiredXPPoints > 0) player.giveExperiencePoints(-requiredXPPoints);
+        }
+
+        altar.setStoredItem(result);
+
         level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0f, 1.0f);
-        ((ServerLevel) level).sendParticles(ParticleTypes.OMINOUS_SPAWNING, pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5, 30, 0.3, 1.0, 0.3, 0.05);
+        ((ServerLevel) level).sendParticles(ParticleTypes.OMINOUS_SPAWNING,
+                pos.getX() + 0.5, pos.getY() + 1.5, pos.getZ() + 0.5,
+                30, 0.3, 1.0, 0.3, 0.05);
 
-        ((ServerPlayer) player).connection.send(new ClientboundBlockUpdatePacket(level, pos));
-        player.inventoryMenu.sendAllDataToRemote();
-
+        syncBlock(player, level, pos);
         return InteractionResult.SUCCESS_SERVER;
     }
 
-
     public static final class Model extends BlockModel {
+        private static final float FLOAT_AMPLITUDE = 0.06f;
+        private static final float FLOAT_SPEED = 0.05f;
+        private static final float ROTATION_SPEED = 0.05f;
 
-        private static final float FLOAT_AMPLITUDE  = 0.06f;
-        private static final float FLOAT_SPEED      = 0.05f;
-        private static final float ROTATION_SPEED   = 0.05f; // radians per tick
+        private final Quaternionf rotationBuffer = new Quaternionf();
+        private final AxisAngle4f axisAngle = new AxisAngle4f();
 
         private final ItemDisplayElement main;
         private final ItemDisplayElement altarItem;
+
+        private float lastYOffset = 0f;
+        private float lastAngle = 0f;
 
         public Model(BlockPos pos, BlockState state) {
             this.main = ItemDisplayElementUtil.createSimple(ItemDisplayElementUtil.getModel(state.getBlock().asItem()).get());
@@ -214,22 +234,36 @@ public class PaleAltarBlock extends BaseEntityBlock implements FactoryBlock, Cus
         }
 
         public void setAltarItem(ItemStack stack) {
-            this.altarItem.setItem(stack.copy());
-            this.altarItem.tick();
+            if (!ItemStack.matches(this.altarItem.getItem(), stack)) {
+                this.altarItem.setItem(stack.copy());
+                this.altarItem.tick();
+            }
         }
 
         @Override
         public void tick() {
             super.tick();
             if (this.altarItem.getItem().isEmpty()) return;
-            if (this.getTick() % 2 != 0) return;
-            float t = this.getTick() * FLOAT_SPEED;
+
+            int tick = this.getTick();
+            if ((tick & 1) != 0) return;
+
+            float t = tick * FLOAT_SPEED;
             float yOffset = (float) Math.sin(t) * FLOAT_AMPLITUDE;
-            float angle = this.getTick() * ROTATION_SPEED;
-            Quaternionf rotation = new Quaternionf(new AxisAngle4f(angle, 0f, 1f, 0f));
+            float angle = tick * ROTATION_SPEED;
+
+            if (Math.abs(yOffset - lastYOffset) < 0.001f && Math.abs(angle - lastAngle) < 0.001f) {
+                return;
+            }
+            lastYOffset = yOffset;
+            lastAngle = angle;
+
+            axisAngle.set(angle, 0f, 1f, 0f);
+            rotationBuffer.set(axisAngle);
+
             this.altarItem.setInterpolationDuration(3);
             this.altarItem.setTranslation(new Vector3f(0f, 0.75f + yOffset, 0f));
-            this.altarItem.setLeftRotation(rotation);
+            this.altarItem.setLeftRotation(rotationBuffer);
             this.altarItem.startInterpolation();
         }
 

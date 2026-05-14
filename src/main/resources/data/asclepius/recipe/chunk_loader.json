@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": "minecraft:ender_pearl",
+    "L": "minecraft:lodestone",
+    "O": "minecraft:obsidian"
+  },
+  "pattern": [
+    "OEO",
+    "ELE",
+    "OEO"
+  ],
+  "result": {
+    "id": "asclepius:chunk_loader"
+  }
+}

@@ -8,7 +8,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
@@ -24,15 +23,8 @@ public class EnderKeyItem extends SimplePolymerItem {
     }
 
     @Override
-    public @NonNull Identifier getPolymerItemModel(ItemStack stack, @Nullable PacketContext context,
-            HolderLookup.Provider lookup) {
+    public @NonNull Identifier getPolymerItemModel(ItemStack stack, @Nullable PacketContext context, HolderLookup.Provider lookup) {
         return Identifier.fromNamespaceAndPath(Asclepius.MOD_ID, "ender_key");
-    }
-
-    @Override
-    public @NonNull ItemStack getPolymerItemStack(ItemStack itemStack, TooltipFlag tooltipType, @Nullable PacketContext context, HolderLookup.Provider lookup) {
-        ItemStack item = super.getPolymerItemStack(itemStack, tooltipType, context, lookup);
-        return item;
     }
 
     @Override

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": "minecraft:clay",
+    "M": "minecraft:mud"
+  },
+  "pattern": [
+    "MC",
+    "CM"
+  ],
+  "result": {
+    "id": "asclepius:shale"
+  }
+}

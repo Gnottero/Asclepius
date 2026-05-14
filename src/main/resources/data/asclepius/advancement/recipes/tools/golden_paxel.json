@@ -11,26 +11,6 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_golden_pickaxe": {
-      "conditions": {
-        "items": [
-          {
-            "items": "minecraft:golden_pickaxe"
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
-    "has_golden_shovel": {
-      "conditions": {
-        "items": [
-          {
-            "items": "minecraft:golden_shovel"
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
     "has_the_recipe": {
       "conditions": {
         "recipe": "asclepius:golden_paxel"
@@ -41,9 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_golden_axe",
-      "has_golden_pickaxe",
-      "has_golden_shovel"
+      "has_golden_axe"
     ]
   ],
   "rewards": {

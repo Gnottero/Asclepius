@@ -11,26 +11,6 @@
       },
       "trigger": "minecraft:inventory_changed"
     },
-    "has_copper_pickaxe": {
-      "conditions": {
-        "items": [
-          {
-            "items": "minecraft:copper_pickaxe"
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
-    "has_copper_shovel": {
-      "conditions": {
-        "items": [
-          {
-            "items": "minecraft:copper_shovel"
-          }
-        ]
-      },
-      "trigger": "minecraft:inventory_changed"
-    },
     "has_the_recipe": {
       "conditions": {
         "recipe": "asclepius:copper_paxel"
@@ -41,9 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_copper_axe",
-      "has_copper_pickaxe",
-      "has_copper_shovel"
+      "has_copper_axe"
     ]
   ],
   "rewards": {

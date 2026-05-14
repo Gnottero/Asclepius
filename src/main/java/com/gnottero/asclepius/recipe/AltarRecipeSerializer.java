@@ -12,6 +12,7 @@ public class AltarRecipeSerializer {
 
     public static final MapCodec<AltarRecipe> CODEC = RecordCodecBuilder.mapCodec(instance ->
             instance.group(
+                    Codec.BOOL.optionalFieldOf("consume_catalyst", true).forGetter(AltarRecipe::consumeCatalyst),
                     Codec.STRING.optionalFieldOf("group", "").forGetter(AltarRecipe::group),
                     IngredientWithComponents.CODEC.fieldOf("base").forGetter(AltarRecipe::getBaseItem),
                     IngredientWithComponents.CODEC.fieldOf("catalyst").forGetter(AltarRecipe::getCatalystItem),
@@ -21,6 +22,7 @@ public class AltarRecipeSerializer {
     );
 
     public static final StreamCodec<RegistryFriendlyByteBuf, AltarRecipe> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.BOOL, AltarRecipe::consumeCatalyst,
                     ByteBufCodecs.STRING_UTF8, AltarRecipe::group,
                     IngredientWithComponents.STREAM_CODEC, AltarRecipe::getBaseItem,
                     IngredientWithComponents.STREAM_CODEC, AltarRecipe::getCatalystItem,

@@ -3,7 +3,9 @@
   "package": "com.gnottero.asclepius.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "EndCityElytraMixin"
+    "EndCityElytraMixin",
+    "LiquidBlockAccessor",
+    "LiquidBlockMixin"
   ],
   "injectors": {
     "defaultRequire": 1

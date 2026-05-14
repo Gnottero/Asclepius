@@ -1,7 +1,9 @@
 package com.gnottero.asclepius.registry;
 
 import com.gnottero.asclepius.Asclepius;
+import com.gnottero.asclepius.block.entity.ChunkLoaderBlockEntity;
 import com.gnottero.asclepius.block.entity.PaleAltarBlockEntity;
+import eu.pb4.polymer.core.api.block.PolymerBlockUtils;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -13,14 +15,17 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 public class AsclepiusBlockEntities {
 
     public static final BlockEntityType<PaleAltarBlockEntity> PALE_ALTAR = register(PaleAltarBlockEntity::new, AsclepiusBlocks.PALE_ALTAR);
+    public static final BlockEntityType<ChunkLoaderBlockEntity> CHUNK_LOADER_BE = register(ChunkLoaderBlockEntity::new, AsclepiusBlocks.CHUNK_LOADER);
 
     public static <T extends BlockEntity> BlockEntityType<T> register(FabricBlockEntityTypeBuilder.Factory<T> factory, Block block) {
-        return Registry.register(
+        BlockEntityType<T> type = Registry.register(
                 BuiltInRegistries.BLOCK_ENTITY_TYPE,
                 Identifier.fromNamespaceAndPath(Asclepius.MOD_ID,
                         BuiltInRegistries.BLOCK.getKey(block).getPath()),
                 FabricBlockEntityTypeBuilder.create(factory, block).build()
         );
+        PolymerBlockUtils.registerBlockEntity(type);
+        return type;
     }
 
     public static void registerAll() {
