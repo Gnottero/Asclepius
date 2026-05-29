@@ -1,10 +1,9 @@
-package com.gnottero.asclepius.item;
+package com.gnottero.asclepius.item.misc;
 
 import com.gnottero.asclepius.Asclepius;
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;

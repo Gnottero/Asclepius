@@ -1,6 +1,6 @@
 package com.gnottero.asclepius.event;
 
-import com.gnottero.asclepius.item.HammerItem;
+import com.gnottero.asclepius.item.tools.HammerItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EquipmentSlot;

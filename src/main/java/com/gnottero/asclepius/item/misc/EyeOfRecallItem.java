@@ -1,4 +1,4 @@
-package com.gnottero.asclepius.item;
+package com.gnottero.asclepius.item.misc;
 
 import com.gnottero.asclepius.Asclepius;
 import com.gnottero.asclepius.registry.AsclepiusComponents;
@@ -31,15 +31,17 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
-public class ReachGauntlet extends SimplePolymerItem {
+public class EyeOfRecallItem extends SimplePolymerItem {
 
-    public ReachGauntlet(Properties settings) {
+    private static final int MAX_CHARGE = 64;
+
+    public EyeOfRecallItem(Properties settings) {
         super(settings);
     }
 
     @Override
     public @NonNull Identifier getPolymerItemModel(ItemStack stack, @Nullable PacketContext context, HolderLookup.Provider lookup) {
-        return Identifier.fromNamespaceAndPath(Asclepius.MOD_ID, "reach_gauntlet");
+        return Identifier.fromNamespaceAndPath(Asclepius.MOD_ID, "eye_of_recall");
     }
 
     @Override
@@ -56,41 +58,57 @@ public class ReachGauntlet extends SimplePolymerItem {
         tooltipAdder.accept(Component.empty().append(Component.literal("| ").withStyle(ChatFormatting.DARK_GRAY)
                         .append(Component.translatable("item.asclepius.eye_of_recall_description", Items.ENDER_PEARL.getDefaultInstance().getHoverName())).withStyle(ChatFormatting.DARK_GRAY)));
 
-//        tooltipAdder.accept(Component.translatable("item.asclepius.eye_of_recall_charge", currentCharge, MAX_CHARGE)
-//                .withStyle(ChatFormatting.DARK_GRAY));
+        tooltipAdder.accept(Component.translatable("item.asclepius.eye_of_recall_charge", currentCharge, MAX_CHARGE)
+                .withStyle(ChatFormatting.DARK_GRAY));
     }
 
     @Override
-    public boolean overrideStackedOnOther(ItemStack self, Slot slot, ClickAction clickAction, Player player) {
-        Slottootot
+    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+        if (level.isClientSide() || !(player instanceof ServerPlayer)) return InteractionResult.PASS;
 
-        return super.overrideStackedOnOther(self, slot, clickAction, player);
+        ItemStack heldItem = player.getItemInHand(hand);
+        int currentCharge = heldItem.getOrDefault(AsclepiusComponents.EYE_CHARGE, 0);
+
+        if (currentCharge <= 0) {
+            player.sendSystemMessage(Component.translatable("item.asclepius.eye_of_recall.no_charges"));
+            return InteractionResult.FAIL;
+        }
+
+        ServerPlayer.RespawnConfig respawnConfig = ((ServerPlayer) player).getRespawnConfig();
+
+        if (respawnConfig == null || ((ServerLevel) level).getServer().getLevel(respawnConfig.respawnData().dimension()) == null) {
+            player.sendSystemMessage(Component.translatable("block.minecraft.spawn.not_valid"));
+            return InteractionResult.PASS;
+        }
+
+        TeleportTransition transition = ((ServerPlayer) player).findRespawnPositionAndUseSpawnBlock(false, TeleportTransition.DO_NOTHING);
+
+        if (transition.missingRespawnBlock()) {
+            player.sendSystemMessage(Component.translatable("block.minecraft.spawn.not_valid"));
+            return InteractionResult.PASS;
+        }
+
+        heldItem.set(AsclepiusComponents.EYE_CHARGE, currentCharge - 1);
+        player.teleport(transition.withRotation(player.yBodyRot, player.xRotO));
+        level.playSound(null, player.blockPosition(), SoundEvents.RESPAWN_ANCHOR_AMBIENT, SoundSource.BLOCKS, 1.0f, 1.0f);
+
+        return InteractionResult.SUCCESS;
     }
 
     @Override
     public boolean overrideOtherStackedOnMe(ItemStack self, ItemStack other, Slot slot, ClickAction clickAction, Player player, SlotAccess carriedItem) {
-        if (clickAction != ClickAction.SECONDARY || other.isEmpty()) {
-            return false;
-        }
-
-        if (!other.is(Items.ENDER_PEARL)) {
-            return false;
-        }
+        if (clickAction != ClickAction.SECONDARY) return false;
+        if (!slot.allowModification(player)) return false;
+        if (!other.is(Items.ENDER_PEARL)) return false;
 
         int currentCharge = self.getOrDefault(AsclepiusComponents.EYE_CHARGE, 0);
+        if (currentCharge >= MAX_CHARGE) return false;
 
-        if (currentCharge >= MAX_CHARGE) {
-            return false;
-        }
-
-        if (slot.allowModification(player)) {
-            player.playSound(SoundEvents.RESPAWN_ANCHOR_CHARGE, 0.8F, 0.8F + player.level().getRandom().nextFloat() * 0.4F);
-        }
-
-        int toAdd = Math.min(other.count(), MAX_CHARGE - currentCharge);
+        int toAdd = Math.min(other.getCount(), MAX_CHARGE - currentCharge);
         self.set(AsclepiusComponents.EYE_CHARGE, currentCharge + toAdd);
         other.shrink(toAdd);
 
+        player.playSound(SoundEvents.RESPAWN_ANCHOR_CHARGE, 0.8F, 0.8F + player.level().getRandom().nextFloat() * 0.4F);
         return true;
     }
 

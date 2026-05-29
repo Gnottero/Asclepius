@@ -1,4 +1,4 @@
-package com.gnottero.asclepius.item;
+package com.gnottero.asclepius.item.tools;
 
 import com.gnottero.asclepius.Asclepius;
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;

@@ -60,6 +60,8 @@ public class AsclepiusModelProvider extends FabricModelProvider {
         generateFlat(AsclepiusItems.ENDER_KEY, itemOutput, modelOutput);
         generateFlat(AsclepiusItems.RECALL_EYE, itemOutput, modelOutput);
 
+        generateFlat(AsclepiusItems.ANCIENT_SQUID_RELIC, itemOutput, modelOutput);
+
         itemOutput.accept(AsclepiusItems.TERU_TERU_BOZU, ItemModelUtils.plainModel(Identifier.fromNamespaceAndPath("asclepius", "block/teru_teru_bozu")));
         itemOutput.accept(AsclepiusItems.PALE_ALTAR, ItemModelUtils.plainModel(Identifier.fromNamespaceAndPath("asclepius", "block/pale_altar")));
         itemOutput.accept(AsclepiusItems.VOLCANIC_ASH, ItemModelUtils.plainModel(Identifier.fromNamespaceAndPath("asclepius", "block/volcanic_ash")));

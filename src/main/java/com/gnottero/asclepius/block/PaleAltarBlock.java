@@ -1,7 +1,7 @@
 package com.gnottero.asclepius.block;
 
 import com.gnottero.asclepius.block.entity.PaleAltarBlockEntity;
-import com.gnottero.asclepius.item.HammerItem;
+import com.gnottero.asclepius.item.tools.HammerItem;
 import com.gnottero.asclepius.recipe.AltarRecipe;
 import com.gnottero.asclepius.recipe.AltarRecipeInput;
 import com.gnottero.asclepius.registry.AsclepiusRecipes;

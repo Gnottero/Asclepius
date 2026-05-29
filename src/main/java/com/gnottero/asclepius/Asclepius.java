@@ -14,14 +14,13 @@ public class Asclepius implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		AsclepiusComponents.registerAll();
 
 		AsclepiusBlocks.registerAll();
 		AsclepiusBlockEntities.registerAll();
-
 		AsclepiusItems.registerAll();
 		AsclepiusDispenserBehaviors.registerAll();
 		AsclepiusEvents.registerAll();
-		AsclepiusComponents.registerAll();
 
 		AsclepiusLootTables.registerAll();
 		AsclepiusTags.registerAll();
@@ -30,6 +29,6 @@ public class Asclepius implements ModInitializer {
 		PolymerResourcePackUtils.addModAssets(MOD_ID);
 		PolymerResourcePackUtils.markAsRequired();
 
-		Asclepius.LOGGER.info("[" + Asclepius.MOD_ID + "]> " + "Loaded successfully");
+		LOGGER.info("[{}]> Loaded successfully", MOD_ID);
 	}
 }
