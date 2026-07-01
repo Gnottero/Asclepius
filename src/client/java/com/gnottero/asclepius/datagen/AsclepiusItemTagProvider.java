@@ -1,11 +1,13 @@
 package com.gnottero.asclepius.datagen;
 
 import com.gnottero.asclepius.registry.AsclepiusItems;
+import com.gnottero.asclepius.registry.AsclepiusTags;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.tags.EnchantmentTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.item.Items;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -73,5 +75,29 @@ public class AsclepiusItemTagProvider extends FabricTagsProvider.ItemTagsProvide
 
         builder(ItemTags.DURABILITY_ENCHANTABLE)
                 .add(AsclepiusItems.FOX_AMULET.builtInRegistryHolder().key());
+
+
+        builder(AsclepiusTags.FORGOTTEN_RELICS_MASS)
+                .add(Items.COPPER_BLOCK.builtInRegistryHolder().key())
+                .add(Items.IRON_BLOCK.builtInRegistryHolder().key())
+                .add(Items.IRON_BLOCK.builtInRegistryHolder().key())
+                .add(Items.GOLD_BLOCK.builtInRegistryHolder().key())
+                .add(Items.PRISMARINE_BRICKS.builtInRegistryHolder().key())
+                .add(Items.AMETHYST_BLOCK.builtInRegistryHolder().key())
+                .add(Items.CRYING_OBSIDIAN.builtInRegistryHolder().key())
+                .add(Items.SCULK.builtInRegistryHolder().key())
+                .add(Items.GILDED_BLACKSTONE.builtInRegistryHolder().key())
+                .add(Items.PURPUR_BLOCK.builtInRegistryHolder().key())
+                .add(Items.PURPUR_BLOCK.builtInRegistryHolder().key());
+
+        builder(AsclepiusTags.FORGOTTEN_RELICS_VALUE)
+                .add(Items.DIAMOND_BLOCK.builtInRegistryHolder().key())
+                .add(Items.EMERALD_BLOCK.builtInRegistryHolder().key())
+                .add(Items.TOTEM_OF_UNDYING.builtInRegistryHolder().key())
+                .add(Items.HEART_OF_THE_SEA.builtInRegistryHolder().key())
+                .add(Items.ENCHANTED_GOLDEN_APPLE.builtInRegistryHolder().key())
+                .add(Items.ECHO_SHARD.builtInRegistryHolder().key())
+                .add(Items.NETHER_STAR.builtInRegistryHolder().key())
+                .add(Items.NETHERITE_SCRAP.builtInRegistryHolder().key());
     }
 }

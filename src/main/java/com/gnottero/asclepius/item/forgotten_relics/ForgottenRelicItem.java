@@ -2,6 +2,7 @@ package com.gnottero.asclepius.item.forgotten_relics;
 
 import com.gnottero.asclepius.Asclepius;
 import com.gnottero.asclepius.registry.AsclepiusComponents;
+import com.gnottero.asclepius.registry.AsclepiusTags;
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.minecraft.ChatFormatting;
@@ -45,6 +46,7 @@ import java.util.function.Consumer;
 
 public abstract class ForgottenRelicItem extends SimplePolymerItem {
 
+    private static final int MIN_ITEMS_PER_SLOT = 10;
     private final String identifier;
     private final @Nullable DataComponentType<?> requiredComponent;
 
@@ -131,8 +133,8 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
         other.shrink(toAdd);
 
         if (updatedMaterials.isEmpty()) {
-            self.remove(AsclepiusComponents.REPAIR_MATERIALS);
             self.set(AsclepiusComponents.REPAIRED, true);
+            self.remove(AsclepiusComponents.REPAIR_MATERIALS);
         } else {
             self.set(AsclepiusComponents.REPAIR_MATERIALS, updatedMaterials);
         }
@@ -143,9 +145,7 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
     @Override
     public boolean overrideStackedOnOther(ItemStack self, Slot slot, ClickAction clickAction, Player player) {
         if (player.level().isClientSide() || !(player instanceof ServerPlayer)) return false;
-        if (!isRepaired(self)) return false;
-        if (clickAction != ClickAction.SECONDARY) return false;
-        if (!slot.allowModification(player)) return false;
+        if (!isRepaired(self) || clickAction != ClickAction.SECONDARY || !slot.allowModification(player)) return false;
 
         ItemStack other = slot.getItem();
         if (!canApplyOnItem(other) || !satisfiesRelicConditions(other)) return false;
@@ -190,20 +190,27 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
     }
 
     public static List<ItemStackTemplate> generateRepairMaterials(Level level, TagKey<Item> tag, RandomSource random) {
-        HolderLookup.RegistryLookup<Item> itemRegistry = level.registryAccess().lookupOrThrow(Registries.ITEM);
+        HolderLookup.RegistryLookup<Item> registry = level.registryAccess().lookupOrThrow(Registries.ITEM);
+        List<Item> massPool = registry.getOrThrow(AsclepiusTags.FORGOTTEN_RELICS_MASS).stream().map(Holder::value).toList();
+        List<Item> valuePool = registry.getOrThrow(AsclepiusTags.FORGOTTEN_RELICS_VALUE).stream().map(Holder::value).toList();
 
-        List<Item> tagItems = itemRegistry.getOrThrow(tag)
-                .stream()
-                .map(Holder::value)
-                .toList();
+        if (massPool.isEmpty() || valuePool.isEmpty()) return List.of();
 
-        if (tagItems.isEmpty()) return List.of();
+        List<Item> chosenItems = new ArrayList<>();
+        chosenItems.add(valuePool.get(random.nextInt(valuePool.size())));
+        chosenItems.add(massPool.get(random.nextInt(massPool.size())));
+        chosenItems.add(massPool.get(random.nextInt(massPool.size())));
+        chosenItems.add(random.nextBoolean() ? massPool.get(random.nextInt(massPool.size())) : valuePool.get(random.nextInt(valuePool.size())));
 
         List<ItemStackTemplate> result = new ArrayList<>();
-        Item item;
-        for (int i = 0; i < 3; i++) {
-            item = tagItems.get(random.nextInt(tagItems.size()));
-            result.add(new ItemStackTemplate(item, random.nextInt(0, item.getDefaultMaxStackSize())));
+
+        for (int i = 0; i < 4; i++) {
+            Item item = chosenItems.get(i);
+            int maxStack = item.getDefaultMaxStackSize();
+            int qty = random.nextInt(MIN_ITEMS_PER_SLOT, maxStack);
+            qty = Math.max(MIN_ITEMS_PER_SLOT, qty);
+
+            result.add(new ItemStackTemplate(item, qty));
         }
         return result;
     }
