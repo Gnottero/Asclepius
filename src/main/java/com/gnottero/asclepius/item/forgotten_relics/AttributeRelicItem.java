@@ -1,9 +1,12 @@
 package com.gnottero.asclepius.item.forgotten_relics;
 
+import com.gnottero.asclepius.registry.AsclepiusComponents;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -44,7 +47,10 @@ public class AttributeRelicItem extends ForgottenRelicItem {
     }
 
     @Override
-    protected void applyAttribute(ItemStack other) {
+    protected void applyAttribute(ItemStack self, ItemStack other) {
+        ForgottenRelicsRarity rarity = self.getOrDefault(AsclepiusComponents.RELIC_RARITY, ForgottenRelicsRarity.purified);
+        double scaledAmount = amount * rarity.getMultiplier();
+
         var current = other.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY);
         var entries = new ArrayList<>(current.modifiers());
 
@@ -64,8 +70,8 @@ public class AttributeRelicItem extends ForgottenRelicItem {
             // Stack the values based on operation type
             double existingAmount = matchingEntry.modifier().amount();
             double stackedAmount = switch (operation) {
-                case ADD_VALUE, ADD_MULTIPLIED_BASE -> existingAmount + amount;
-                case ADD_MULTIPLIED_TOTAL -> (1 + existingAmount) * (1 + amount) - 1;
+                case ADD_VALUE, ADD_MULTIPLIED_BASE -> existingAmount + scaledAmount;
+                case ADD_MULTIPLIED_TOTAL -> (1 + existingAmount) * (1 + scaledAmount) - 1;
             };
 
             var stackedModifier = new AttributeModifier(
@@ -83,7 +89,7 @@ public class AttributeRelicItem extends ForgottenRelicItem {
 
             entries.add(new ItemAttributeModifiers.Entry(
                     attribute,
-                    new AttributeModifier(modifierId, amount, operation),
+                    new AttributeModifier(modifierId, scaledAmount, operation),
                     slot
             ));
         }

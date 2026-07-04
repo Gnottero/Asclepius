@@ -1,0 +1,9 @@
+{
+  "type": "asclepius:socket_grant",
+  "consume_catalyst": true,
+  "base": { "id": "#minecraft:pickaxes" },
+  "catalyst": { "id": "minecraft:amethyst_shard", "count": 4 },
+  "sockets": 1,
+  "max_sockets": 3,
+  "conditions": { "required_levels": 5 }
+}

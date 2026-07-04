@@ -3,6 +3,10 @@ package com.gnottero.asclepius.registry;
 import com.gnottero.asclepius.Asclepius;
 import com.gnottero.asclepius.recipe.AltarRecipe;
 import com.gnottero.asclepius.recipe.AltarRecipeSerializer;
+import com.gnottero.asclepius.recipe.EnchantmentMergeRecipe;
+import com.gnottero.asclepius.recipe.EnchantmentMergeRecipeSerializer;
+import com.gnottero.asclepius.recipe.SocketGrantRecipe;
+import com.gnottero.asclepius.recipe.SocketGrantRecipeSerializer;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -17,6 +21,12 @@ public class AsclepiusRecipes {
 
     public static final RecipeType<AltarRecipe> ALTAR_TYPE = registerType("altar");
     public static final RecipeSerializer<AltarRecipe> ALTAR_SERIALIZER = registerSerializer("altar", AltarRecipeSerializer.CODEC, AltarRecipeSerializer.STREAM_CODEC);
+
+    public static final RecipeType<SocketGrantRecipe> SOCKET_GRANT_TYPE = registerType("socket_grant");
+    public static final RecipeSerializer<SocketGrantRecipe> SOCKET_GRANT_SERIALIZER = registerSerializer("socket_grant", SocketGrantRecipeSerializer.CODEC, SocketGrantRecipeSerializer.STREAM_CODEC);
+
+    public static final RecipeType<EnchantmentMergeRecipe> ENCHANTMENT_MERGE_TYPE = registerType("enchantment_merge");
+    public static final RecipeSerializer<EnchantmentMergeRecipe> ENCHANTMENT_MERGE_SERIALIZER = registerSerializer("enchantment_merge", EnchantmentMergeRecipeSerializer.CODEC, EnchantmentMergeRecipeSerializer.STREAM_CODEC);
 
 
     public static <T extends Recipe<?>> RecipeType<T> registerType(String path) {

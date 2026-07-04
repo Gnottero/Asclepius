@@ -3,11 +3,15 @@ package com.gnottero.asclepius.item.forgotten_relics;
 import com.gnottero.asclepius.Asclepius;
 import com.gnottero.asclepius.registry.AsclepiusComponents;
 import com.gnottero.asclepius.registry.AsclepiusTags;
+import com.gnottero.asclepius.utils.PlayerXpUtils;
+import com.ibm.icu.impl.CollectionSet;
+
 import eu.pb4.polymer.core.api.item.SimplePolymerItem;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -20,8 +24,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -40,8 +42,11 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public abstract class ForgottenRelicItem extends SimplePolymerItem {
@@ -50,7 +55,8 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
     private final String identifier;
     private final @Nullable DataComponentType<?> requiredComponent;
 
-    public ForgottenRelicItem(Properties settings, String identifier, @Nullable DataComponentType<?> requiredComponent) {
+    public ForgottenRelicItem(Properties settings, String identifier,
+            @Nullable DataComponentType<?> requiredComponent) {
         super(settings.stacksTo(1).component(AsclepiusComponents.REPAIRED, false));
         this.identifier = identifier;
         this.requiredComponent = requiredComponent;
@@ -59,21 +65,31 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
     // ── Abstract hooks ────────────────────────────────────────────────────────
 
     /**
-     * Allows to handle custom logic upon the insertion of the Forgotten Relic to the item
-     * @param other     The ItemStack upon which the Forgotten Relic is applied
+     * Allows to handle custom logic upon the insertion of the Forgotten Relic to
+     * the item
+     * 
+     * @param self  The Forgotten Relic ItemStack being applied (its rolled rarity
+     *              scales the effect)
+     * @param other The ItemStack upon which the Forgotten Relic is applied
      */
-    protected abstract void applyAttribute(ItemStack other);
+    protected abstract void applyAttribute(ItemStack self, ItemStack other);
 
     /**
-     * Allows to add more conditions to the applicability of a Forgotten Relic to an Item
-     * @param other     The ItemStack upon which the Forgotten Relic is applied
-     * @return          A boolean relative to the applicability of the Forgotten Relic
+     * Allows to add more conditions to the applicability of a Forgotten Relic to an
+     * Item
+     * 
+     * @param other The ItemStack upon which the Forgotten Relic is applied
+     * @return A boolean relative to the applicability of the Forgotten Relic
      */
-    protected boolean satisfiesRelicConditions(ItemStack other) { return true; }
+    protected boolean satisfiesRelicConditions(ItemStack other) {
+        return true;
+    }
 
     /**
      * Define the sound to play whenever the Forgotten Relic is applied to the item
-     * @return          The SoundEvent to play when the Forgotten Relic is applied to the item
+     * 
+     * @return The SoundEvent to play when the Forgotten Relic is applied to the
+     *         item
      */
     protected SoundEvent getApplySound() {
         return SoundEvents.RESPAWN_ANCHOR_CHARGE;
@@ -82,22 +98,35 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
     // ── Shared logic ──────────────────────────────────────────────────────────
 
     @Override
-    public @NonNull Identifier getPolymerItemModel(ItemStack stack, @Nullable PacketContext context, HolderLookup.Provider lookup) {
+    public @NonNull Identifier getPolymerItemModel(ItemStack stack, @Nullable PacketContext context,
+            HolderLookup.Provider lookup) {
         return Identifier.fromNamespaceAndPath(Asclepius.MOD_ID, identifier);
     }
 
     @Override
-    public void appendHoverText(@NonNull ItemStack stack, @NonNull TooltipContext context, @NonNull TooltipDisplay tooltipDisplay,
-                                @NonNull Consumer<Component> tooltipAdder, @NonNull TooltipFlag flag) {
+    public void appendHoverText(@NonNull ItemStack stack, @NonNull TooltipContext context,
+            @NonNull TooltipDisplay tooltipDisplay,
+            @NonNull Consumer<Component> tooltipAdder, @NonNull TooltipFlag flag) {
+
+        ForgottenRelicsRarity rarity = stack.get(AsclepiusComponents.RELIC_RARITY);
+        if (rarity != null) {
+            tooltipAdder
+                    .accept(Component
+                            .translatable("item.asclepius.forgotten_relics.rarity.begin",
+                                    Component.translatable(rarity.getDisplayName()))
+                            .withStyle(rarity.getColor()));
+        }
 
         if (!isRepaired(stack)) {
-            tooltipAdder.accept(Component.translatable("item.asclepius.forgotten_relic.needs_repair.line_1").withStyle(ChatFormatting.GRAY));
-            tooltipAdder.accept(Component.translatable("item.asclepius.forgotten_relic.needs_repair.line_2").withStyle(ChatFormatting.GRAY));
+            tooltipAdder.accept(Component.translatable("item.asclepius.forgotten_relics.needs_repair.line_1")
+                    .withStyle(ChatFormatting.GRAY));
+            tooltipAdder.accept(Component.translatable("item.asclepius.forgotten_relics.needs_repair.line_2")
+                    .withStyle(ChatFormatting.GRAY));
             tooltipAdder.accept(Component.empty());
 
             var materials = stack.getOrDefault(AsclepiusComponents.REPAIR_MATERIALS, List.<ItemStackTemplate>of());
             if (!materials.isEmpty()) {
-                tooltipAdder.accept(Component.translatable("item.asclepius.forgotten_relic.needs_repair.line_3")
+                tooltipAdder.accept(Component.translatable("item.asclepius.forgotten_relics.needs_repair.line_3")
                         .withStyle(ChatFormatting.GRAY));
 
                 materials.stream()
@@ -105,22 +134,32 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
                                 .withStyle(ChatFormatting.GRAY)
                                 .append(Component.translatable("tooltip.asclepius.forgotten_relic.material_entry",
                                         material.count(),
-                                        material.create().getHoverName()))
-                        )
+                                        material.create().getHoverName())))
                         .forEach(tooltipAdder);
+
+                tooltipAdder.accept(Component.empty());
+            }
+            if (rarity != null) {
+                tooltipAdder.accept(Component
+                        .translatable("item.asclepius.forgotten_relics.required_levels", rarity.getRequiredLevels())
+                        .withStyle(ChatFormatting.GRAY));
             }
         }
     }
 
     @Override
-    public boolean overrideOtherStackedOnMe(ItemStack self, ItemStack other, Slot slot, ClickAction clickAction, Player player, SlotAccess carriedItem) {
-        if (player.level().isClientSide() || !(player instanceof ServerPlayer)) return false;
-        if (isRepaired(self) || clickAction != ClickAction.SECONDARY || !slot.allowModification(player)) return false;
+    public boolean overrideOtherStackedOnMe(ItemStack self, ItemStack other, Slot slot, ClickAction clickAction,
+            Player player, SlotAccess carriedItem) {
+        if (player.level().isClientSide() || !(player instanceof ServerPlayer))
+            return false;
+        if (isRepaired(self) || clickAction != ClickAction.SECONDARY || !slot.allowModification(player))
+            return false;
 
         List<ItemStackTemplate> repairMaterials = getRepairMaterials(self);
         Item otherItem = other.getItem();
         var match = find(repairMaterials, otherItem);
-        if (match.isEmpty()) return false;
+        if (match.isEmpty())
+            return false;
 
         int requiredAmount = match.get().count();
         int toAdd = Math.min(requiredAmount, other.getCount());
@@ -132,25 +171,23 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
 
         other.shrink(toAdd);
 
-        if (updatedMaterials.isEmpty()) {
-            self.set(AsclepiusComponents.REPAIRED, true);
-            self.remove(AsclepiusComponents.REPAIR_MATERIALS);
-        } else {
-            self.set(AsclepiusComponents.REPAIR_MATERIALS, updatedMaterials);
-        }
+        self.set(AsclepiusComponents.REPAIR_MATERIALS, updatedMaterials);
 
         return true;
     }
 
     @Override
     public boolean overrideStackedOnOther(ItemStack self, Slot slot, ClickAction clickAction, Player player) {
-        if (player.level().isClientSide() || !(player instanceof ServerPlayer)) return false;
-        if (!isRepaired(self) || clickAction != ClickAction.SECONDARY || !slot.allowModification(player)) return false;
+        if (player.level().isClientSide() || !(player instanceof ServerPlayer))
+            return false;
+        if (!isRepaired(self) || clickAction != ClickAction.SECONDARY || !slot.allowModification(player))
+            return false;
 
         ItemStack other = slot.getItem();
-        if (!canApplyOnItem(other) || !satisfiesRelicConditions(other)) return false;
+        if (!canApplyOnItem(other) || !satisfiesRelicConditions(other))
+            return false;
 
-        applyAttribute(other);
+        applyAttribute(self, other);
         addToSockets(self, other);
         addRelicLore(self, other);
 
@@ -161,20 +198,54 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
 
     @Override
     public InteractionResult use(Level level, Player player, InteractionHand hand) {
-        if (level.isClientSide() || !(player instanceof ServerPlayer)) return InteractionResult.PASS;
+        if (level.isClientSide() || !(player instanceof ServerPlayer))
+            return InteractionResult.PASS;
         ItemStack stack = player.getItemInHand(hand);
 
-        if (isRepaired(stack)) return InteractionResult.PASS;
-        if (hasRepairMaterialsList(stack)) return InteractionResult.PASS;
+        if (isRepaired(stack))
+            return InteractionResult.PASS;
 
-        stack.set(AsclepiusComponents.REPAIR_MATERIALS, generateRepairMaterials(level, ItemTags.LOGS, level.getRandom()));
+        if (!hasRepairMaterialsList(stack)) {
+            ForgottenRelicsRarity rarity = stack.get(AsclepiusComponents.RELIC_RARITY);
+            if (rarity == null) {
+                rarity = ForgottenRelicsRarity.roll(player.experienceLevel, level.getRandom());
+                stack.set(AsclepiusComponents.RELIC_RARITY, rarity);
+            }
+
+            stack.set(AsclepiusComponents.REPAIR_MATERIALS, generateRepairMaterials(level, level.getRandom(), rarity));
+        } else if (getRepairMaterials(stack).size() == 0) {
+            return finishRepairWithLevels(stack, player);
+        }
 
         return InteractionResult.PASS;
     }
 
+    // Allow the player to finish the repairment of the relic with the required
+    // levels
+    private InteractionResult finishRepairWithLevels(ItemStack stack, Player player) {
+        ForgottenRelicsRarity rarity = stack.getOrDefault(AsclepiusComponents.RELIC_RARITY,
+                ForgottenRelicsRarity.purified);
+        int requiredXp = PlayerXpUtils.getTotalXpForLevel(rarity.getRequiredLevels());
+        boolean isCreative = player.isCreative();
+
+        if (!isCreative && PlayerXpUtils.getTotalXp(player) < requiredXp) {
+            player.sendSystemMessage(Component.translatable("item.asclepius.forgotten_relics.not_enough_xp_to_repair",
+                    rarity.getRequiredLevels()));
+            return InteractionResult.PASS;
+        }
+
+        stack.set(AsclepiusComponents.REPAIRED, true);
+        stack.remove(AsclepiusComponents.REPAIR_MATERIALS);
+        if (!isCreative)
+            player.giveExperiencePoints(-requiredXp);
+        player.level().playSound(null, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS,
+                1.0f, 1.0f);
+        return InteractionResult.SUCCESS_SERVER;
+    }
+
     @Override
     public boolean isFoil(ItemStack stack) {
-        return stack.getOrDefault(AsclepiusComponents.REPAIRED, false);
+        return isRepaired(stack);
     }
 
     public boolean isRepaired(ItemStack stack) {
@@ -189,36 +260,68 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
         return stack.getOrDefault(AsclepiusComponents.REPAIR_MATERIALS, List.of());
     }
 
-    public static List<ItemStackTemplate> generateRepairMaterials(Level level, TagKey<Item> tag, RandomSource random) {
+    public static List<ItemStackTemplate> generateRepairMaterials(Level level, RandomSource random,
+            ForgottenRelicsRarity rarity) {
         HolderLookup.RegistryLookup<Item> registry = level.registryAccess().lookupOrThrow(Registries.ITEM);
-        List<Item> massPool = registry.getOrThrow(AsclepiusTags.FORGOTTEN_RELICS_MASS).stream().map(Holder::value).toList();
-        List<Item> valuePool = registry.getOrThrow(AsclepiusTags.FORGOTTEN_RELICS_VALUE).stream().map(Holder::value).toList();
+        List<Item> massPool = registry.getOrThrow(AsclepiusTags.FORGOTTEN_RELICS_MASS).stream().map(Holder::value)
+                .toList();
+        List<Item> valuePool = registry.getOrThrow(AsclepiusTags.FORGOTTEN_RELICS_VALUE).stream().map(Holder::value)
+                .toList();
 
-        if (massPool.isEmpty() || valuePool.isEmpty()) return List.of();
+        if (massPool.isEmpty() || valuePool.isEmpty())
+            return List.of();
 
+        // Create a combined pool with weights for better distribution
+        List<Item> combinedPool = new ArrayList<>();
+        combinedPool.addAll(valuePool);
+        combinedPool.addAll(massPool);
+        combinedPool.addAll(massPool);
+
+        // Shuffle the combined pool
+        Collections.shuffle(combinedPool);
+
+        // Use a Set for O(1) lookups and collect unique items
+        Set<Item> selectedItems = new HashSet<>();
         List<Item> chosenItems = new ArrayList<>();
-        chosenItems.add(valuePool.get(random.nextInt(valuePool.size())));
-        chosenItems.add(massPool.get(random.nextInt(massPool.size())));
-        chosenItems.add(massPool.get(random.nextInt(massPool.size())));
-        chosenItems.add(random.nextBoolean() ? massPool.get(random.nextInt(massPool.size())) : valuePool.get(random.nextInt(valuePool.size())));
+
+        // Try to get 4 unique items from the combined pool
+        for (Item item : combinedPool) {
+            if (!selectedItems.contains(item)) {
+                selectedItems.add(item);
+                chosenItems.add(item);
+                if (chosenItems.size() == 4)
+                    break;
+            }
+        }
 
         List<ItemStackTemplate> result = new ArrayList<>();
 
-        for (int i = 0; i < 4; i++) {
-            Item item = chosenItems.get(i);
-            int maxStack = item.getDefaultMaxStackSize();
-            int qty = random.nextInt(MIN_ITEMS_PER_SLOT, maxStack);
-            qty = Math.max(MIN_ITEMS_PER_SLOT, qty);
+        float qtyMultiplier = rarity.getMultiplier()/1.2f;
+        for (Item item : chosenItems) {
+            int base = rollBaseQuantity(random, item.getDefaultMaxStackSize());
+            int qty = Math.clamp(Math.round(base * qtyMultiplier), 1, 99);
 
-            result.add(new ItemStackTemplate(item, qty));
+            DataComponentPatch patch = DataComponentPatch.builder().set(DataComponents.MAX_STACK_SIZE, qty).build();
+            result.add(new ItemStackTemplate(item.builtInRegistryHolder(), qty, patch));
         }
         return result;
     }
 
+    // Rolls a base quantity in [min(MIN_ITEMS_PER_SLOT, maxStack), maxStack] —
+    // items with a small max
+    // stack size (e.g. Totem of Undying) would otherwise make random.nextInt's
+    // bounds invalid.
+    private static int rollBaseQuantity(RandomSource random, int maxStack) {
+        int lower = Math.min(MIN_ITEMS_PER_SLOT, maxStack);
+        return lower >= maxStack ? maxStack : random.nextInt(lower, maxStack + 1);
+    }
+
     public boolean canApplyOnItem(ItemStack stack) {
-        if (stack.isEmpty()) return false;
-        if (requiredComponent != null && !stack.has(requiredComponent)) return false;
-        int maxSockets  = stack.getOrDefault(AsclepiusComponents.MAX_SOCKETS, 0);
+        if (stack.isEmpty())
+            return false;
+        if (requiredComponent != null && !stack.has(requiredComponent))
+            return false;
+        int maxSockets = stack.getOrDefault(AsclepiusComponents.MAX_SOCKETS, 0);
         int usedSockets = stack.getOrDefault(AsclepiusComponents.SOCKETS, List.of()).size();
         return maxSockets > 0 && usedSockets < maxSockets;
     }
@@ -232,10 +335,12 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
     private void addRelicLore(ItemStack self, ItemStack other) {
         var currentLore = other.getOrDefault(DataComponents.LORE, ItemLore.EMPTY);
         var lines = new ArrayList<>(currentLore.lines());
+        ForgottenRelicsRarity rarity = self.get(AsclepiusComponents.RELIC_RARITY);
 
         var sockets = other.getOrDefault(AsclepiusComponents.SOCKETS, List.of());
-        if (!lines.isEmpty() && sockets.size() == 1) {
-            lines.add(Component.empty());
+        if (sockets.size() == 1) {
+            if (!lines.isEmpty())
+                lines.add(Component.empty());
             lines.add(Component.translatable("item.asclepius.sockets_title").withStyle(ChatFormatting.GRAY)
                     .withStyle(style -> style.withColor(ChatFormatting.GRAY).withItalic(false)));
         }
@@ -246,13 +351,15 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
 
         var relicLine = spriteComponent
                 .append(Component.literal(" ").withStyle(Style.EMPTY))
-                .append(self.getHoverName().copy().withStyle(ChatFormatting.GRAY));
+                .append(Component.translatable(self.getItemName().getString()).withStyle(rarity.getColor()));
 
         lines.add(relicLine);
         other.set(DataComponents.LORE, new ItemLore(lines));
     }
 
-    public @Nullable DataComponentType<?> getRequiredComponent() { return requiredComponent; }
+    public @Nullable DataComponentType<?> getRequiredComponent() {
+        return requiredComponent;
+    }
 
     // Find the matching template
     Optional<ItemStackTemplate> find(List<ItemStackTemplate> materials, Item item) {
@@ -261,7 +368,8 @@ public abstract class ForgottenRelicItem extends SimplePolymerItem {
                 .findFirst();
     }
 
-    // Edit — returns a new list with the updated count (lists are immutable in components)
+    // Edit — returns a new list with the updated count (lists are immutable in
+    // components)
     List<ItemStackTemplate> setCount(List<ItemStackTemplate> materials, Item item, int newCount) {
         return materials.stream()
                 .map(t -> t.create().is(item) ? t.withCount(newCount) : t)

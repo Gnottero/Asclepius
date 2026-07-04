@@ -3,7 +3,6 @@ package com.gnottero.asclepius.utils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -15,7 +14,7 @@ public class EnchantmentMerger {
 
     public record MergeResult(ItemStack output, int xpCost) {}
 
-    public static Optional<MergeResult> tryMerge(ItemStack base, ItemStack catalyst, ServerPlayer player) {
+    public static Optional<MergeResult> tryMerge(ItemStack base, ItemStack catalyst) {
         if (base.isEmpty() || catalyst.isEmpty()) return Optional.empty();
 
         ItemEnchantments.Mutable baseEnchants = new ItemEnchantments.Mutable(EnchantmentHelper.getEnchantmentsForCrafting(base));

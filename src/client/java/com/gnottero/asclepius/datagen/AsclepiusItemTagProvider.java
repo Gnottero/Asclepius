@@ -78,7 +78,7 @@ public class AsclepiusItemTagProvider extends FabricTagsProvider.ItemTagsProvide
 
 
         builder(AsclepiusTags.FORGOTTEN_RELICS_MASS)
-                .add(Items.COPPER_BLOCK.builtInRegistryHolder().key())
+                .add(Items.COPPER_BLOCK.weathering().unaffected().builtInRegistryHolder().key())
                 .add(Items.IRON_BLOCK.builtInRegistryHolder().key())
                 .add(Items.IRON_BLOCK.builtInRegistryHolder().key())
                 .add(Items.GOLD_BLOCK.builtInRegistryHolder().key())

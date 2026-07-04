@@ -4,6 +4,10 @@ import com.gnottero.asclepius.block.entity.PaleAltarBlockEntity;
 import com.gnottero.asclepius.item.tools.HammerItem;
 import com.gnottero.asclepius.recipe.AltarRecipe;
 import com.gnottero.asclepius.recipe.AltarRecipeInput;
+import com.gnottero.asclepius.recipe.AltarRitualRecipe;
+import com.gnottero.asclepius.recipe.EnchantmentMergeRecipe;
+import com.gnottero.asclepius.recipe.SocketGrantRecipe;
+import com.gnottero.asclepius.registry.AsclepiusComponents;
 import com.gnottero.asclepius.registry.AsclepiusRecipes;
 import com.gnottero.asclepius.utils.EnchantmentMerger;
 import com.gnottero.asclepius.utils.PlayerXpUtils;
@@ -18,7 +22,6 @@ import eu.pb4.polymer.virtualentity.api.attachment.HolderAttachment;
 import eu.pb4.polymer.virtualentity.api.elements.ItemDisplayElement;
 import net.fabricmc.fabric.api.networking.v1.context.PacketContext;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
@@ -32,7 +35,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -132,62 +134,64 @@ public class PaleAltarBlock extends BaseEntityBlock implements FactoryBlock, Cus
         ItemStack offhand = player.getOffhandItem();
         boolean isCreative = player.isCreative();
 
-        boolean consumeCatalyst = true;
-        int requiredLevels = 0;
-        int requiredXPPoints = 0;
-        int catalystAmount = 0;
-        ItemStack result;
-
         AltarRecipeInput input = new AltarRecipeInput(altarItem, offhand);
-        Optional<RecipeHolder<AltarRecipe>> recipeMatch = ((ServerLevel) level).recipeAccess()
-                .getRecipeFor(AsclepiusRecipes.ALTAR_TYPE, input, level);
+        var recipeAccess = ((ServerLevel) level).recipeAccess();
 
-        if (recipeMatch.isPresent()) {
-            AltarRecipe recipe = recipeMatch.get().value();
-            if (!isCreative) {
-                requiredLevels = recipe.getConditions().requiredLevels();
-                requiredXPPoints = PlayerXpUtils.getTotalXpForLevel(requiredLevels);
-                catalystAmount = recipe.getCatalystItem().count();
-                consumeCatalyst = recipe.consumeCatalyst();
-            }
-            result = recipe.assemble(input);
-        }
-        else {
-            boolean offhandHasEnchants = (offhand.has(DataComponents.ENCHANTMENTS) && !offhand.get(DataComponents.ENCHANTMENTS).isEmpty()) ||
-                    (offhand.has(DataComponents.STORED_ENCHANTMENTS) && !offhand.get(DataComponents.STORED_ENCHANTMENTS).isEmpty());
+        Optional<RecipeHolder<AltarRecipe>> transform = recipeAccess.getRecipeFor(AsclepiusRecipes.ALTAR_TYPE, input, level);
+        Optional<RecipeHolder<SocketGrantRecipe>> socketGrant = transform.isPresent()
+                ? Optional.empty()
+                : recipeAccess.getRecipeFor(AsclepiusRecipes.SOCKET_GRANT_TYPE, input, level);
+        Optional<RecipeHolder<EnchantmentMergeRecipe>> enchantMerge = (transform.isPresent() || socketGrant.isPresent())
+                ? Optional.empty()
+                : recipeAccess.getRecipeFor(AsclepiusRecipes.ENCHANTMENT_MERGE_TYPE, input, level);
 
-            if (!altarItem.isEmpty() && offhandHasEnchants && (altarItem.is(offhand.getItem()) || offhand.is(Items.ENCHANTED_BOOK))) {
-                Optional<EnchantmentMerger.MergeResult> mergeResult = EnchantmentMerger.tryMerge(altarItem, offhand, player);
-                if (mergeResult.isEmpty()) {
-                    player.sendOverlayMessage(MSG_NO_COMPATIBLE_ENCHANTS);
-                    return InteractionResult.PASS;
-                }
-                EnchantmentMerger.MergeResult merge = mergeResult.get();
-                requiredLevels = merge.xpCost();
-                requiredXPPoints = PlayerXpUtils.getTotalXpForLevel(requiredLevels);
-                catalystAmount = 1;
-                result = merge.output();
-            } else {
+        AltarRitualRecipe recipe;
+        ItemStack result;
+        int requiredLevels;
+
+        if (transform.isPresent()) {
+            AltarRecipe r = transform.get().value();
+            recipe = r;
+            requiredLevels = r.getConditions().requiredLevels();
+            result = r.assemble(input);
+        } else if (socketGrant.isPresent()) {
+            SocketGrantRecipe r = socketGrant.get().value();
+            if (altarItem.getOrDefault(AsclepiusComponents.MAX_SOCKETS, 0) >= r.getMaxSockets()) {
+                player.sendOverlayMessage(MSG_CONDITIONS_NOT_MET);
                 return InteractionResult.PASS;
             }
+            recipe = r;
+            requiredLevels = r.getConditions().requiredLevels();
+            result = r.assemble(input);
+        } else if (enchantMerge.isPresent()) {
+            EnchantmentMergeRecipe r = enchantMerge.get().value();
+            Optional<EnchantmentMerger.MergeResult> merge = r.tryMerge(input);
+            if (merge.isEmpty()) {
+                player.sendOverlayMessage(MSG_NO_COMPATIBLE_ENCHANTS);
+                return InteractionResult.PASS;
+            }
+            recipe = r;
+            requiredLevels = merge.get().xpCost();
+            result = merge.get().output();
+        } else {
+            return InteractionResult.PASS;
         }
+
+        int requiredXPPoints = PlayerXpUtils.getTotalXpForLevel(requiredLevels);
 
         if (!isCreative && PlayerXpUtils.getTotalXp(player) < requiredXPPoints) {
             player.sendOverlayMessage(Component.translatable("block.asclepius.altar.not_enough_xp", requiredLevels));
             return InteractionResult.PASS;
         }
 
-        if (recipeMatch.isPresent() && !isCreative) {
-            AltarRecipe recipe = recipeMatch.get().value();
-            if (!recipe.checkConditions(player, level)) {
-                player.sendOverlayMessage(MSG_CONDITIONS_NOT_MET);
-                return InteractionResult.PASS;
-            }
+        if (!isCreative && !recipe.checkConditions(player, level)) {
+            player.sendOverlayMessage(MSG_CONDITIONS_NOT_MET);
+            return InteractionResult.PASS;
         }
 
         if (!isCreative) {
-            if (consumeCatalyst) {
-                offhand.shrink(catalystAmount);
+            if (recipe.consumeCatalyst()) {
+                offhand.shrink(recipe.getCatalystAmount());
             } else if (offhand.isDamageableItem()) {
                 offhand.hurtAndBreak(1, player, InteractionHand.OFF_HAND);
             }

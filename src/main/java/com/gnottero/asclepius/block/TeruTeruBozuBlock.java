@@ -54,12 +54,12 @@ public class TeruTeruBozuBlock extends Block implements FactoryBlock, CustomBrea
 
     @Override
     public BlockState getPolymerBreakEventBlockState(BlockState state, PacketContext context) {
-        return Blocks.WHITE_WOOL.defaultBlockState();
+        return Blocks.WOOL.white().defaultBlockState();
     }
 
     @Override
     public ParticleOptions getBreakingParticle(BlockState blockState) {
-        BlockState breakingState = Blocks.WHITE_WOOL.defaultBlockState();
+        BlockState breakingState = Blocks.WOOL.white().defaultBlockState();
         return new BlockParticleOption(ParticleTypes.BLOCK, breakingState);
     }
 

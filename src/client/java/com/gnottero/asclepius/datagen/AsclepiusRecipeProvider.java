@@ -44,9 +44,9 @@ public class AsclepiusRecipeProvider extends FabricRecipeProvider {
                         .pattern(" W ")
                         .pattern("WSW")
                         .pattern(" W ")
-                        .define('W', Blocks.WHITE_WOOL)
+                        .define('W', Blocks.WOOL.white())
                         .define('S', Items.STRING)
-                        .unlockedBy(getHasName(Blocks.WHITE_WOOL), has(Blocks.WHITE_WOOL))
+                        .unlockedBy(getHasName(Blocks.WOOL.white()), has(Blocks.WOOL.white()))
                         .save(exporter);
 
                 ShapedRecipeBuilder.shaped(items, RecipeCategory.BUILDING_BLOCKS, Blocks.TUFF)
@@ -156,7 +156,7 @@ public class AsclepiusRecipeProvider extends FabricRecipeProvider {
                 hammer(AsclepiusItems.IRON_HAMMER, Items.IRON_PICKAXE, Items.IRON_BLOCK, Items.STICK);
                 hammer(AsclepiusItems.GOLDEN_HAMMER, Items.GOLDEN_PICKAXE, Items.GOLD_BLOCK, Items.STICK);
                 hammer(AsclepiusItems.DIAMOND_HAMMER, Items.DIAMOND_PICKAXE, Items.DIAMOND_BLOCK, Items.STICK);
-                hammer(AsclepiusItems.COPPER_HAMMER, Items.COPPER_PICKAXE, Items.COPPER_BLOCK, Items.STICK);
+                hammer(AsclepiusItems.COPPER_HAMMER, Items.COPPER_PICKAXE, Items.COPPER_BLOCK.weathering().unaffected(), Items.STICK);
             }
 
             private void buildSmithingRecipes() {

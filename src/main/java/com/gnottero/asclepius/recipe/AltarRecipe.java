@@ -1,7 +1,6 @@
 package com.gnottero.asclepius.recipe;
 
 import com.gnottero.asclepius.registry.AsclepiusRecipes;
-import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.entity.player.Player;
@@ -12,14 +11,14 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class AltarRecipe implements Recipe<AltarRecipeInput> {
+public class AltarRecipe implements AltarRitualRecipe {
 
     private final boolean consumeCatalyst;
     private final String group;
-    private final AltarRecipeConditions conditions;
     private final IngredientWithComponents altarItem;
     private final IngredientWithComponents catalyst;
     private final ItemStackTemplate result;
+    private final AltarRecipeConditions conditions;
 
     public AltarRecipe(boolean consumeCatalyst, String group, IngredientWithComponents altarItem, IngredientWithComponents catalyst, ItemStackTemplate result, AltarRecipeConditions conditions) {
         this.consumeCatalyst = consumeCatalyst;
@@ -106,8 +105,13 @@ public class AltarRecipe implements Recipe<AltarRecipeInput> {
 
     public AltarRecipeConditions getConditions() { return this.conditions; }
 
+    @Override
     public boolean consumeCatalyst() { return this.consumeCatalyst; }
 
+    @Override
+    public int getCatalystAmount() { return catalyst.count(); }
+
+    @Override
     public boolean checkConditions(Player player, Level level) { return conditions.check(player, level); }
 
     public IngredientWithComponents getBaseItem() { return altarItem; }
