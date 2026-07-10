@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:sulfur_brick_sideways_stairs",
+  "result": {
+    "id": "minecraft:sulfur_brick_stairs"
+  }
+}

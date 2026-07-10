@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:sulfur_vertical_slab",
+  "result": {
+    "id": "minecraft:sulfur_slab"
+  }
+}

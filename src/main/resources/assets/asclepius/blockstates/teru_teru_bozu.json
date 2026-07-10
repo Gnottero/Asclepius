@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=south,powered=false": { "model": "asclepius:block/teru_teru_bozu", "y": 0 },
+    "facing=south,powered=true": { "model": "asclepius:block/teru_teru_bozu", "y": 0 },
+    "facing=west,powered=false": { "model": "asclepius:block/teru_teru_bozu", "y": 90 },
+    "facing=west,powered=true": { "model": "asclepius:block/teru_teru_bozu", "y": 90 },
+    "facing=north,powered=false": { "model": "asclepius:block/teru_teru_bozu", "y": 180 },
+    "facing=north,powered=true": { "model": "asclepius:block/teru_teru_bozu", "y": 180 },
+    "facing=east,powered=false": { "model": "asclepius:block/teru_teru_bozu", "y": 270 },
+    "facing=east,powered=true": { "model": "asclepius:block/teru_teru_bozu", "y": 270 }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "minecraft:waxed_weathered_cut_copper",
+  "result": {
+    "id": "asclepius:waxed_weathered_cut_copper_sideways_stairs"
+  }
+}

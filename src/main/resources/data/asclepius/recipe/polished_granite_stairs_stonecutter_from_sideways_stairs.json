@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:polished_granite_sideways_stairs",
+  "result": {
+    "id": "minecraft:polished_granite_stairs"
+  }
+}

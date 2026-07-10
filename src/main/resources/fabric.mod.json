@@ -18,6 +18,9 @@
 		"main": [
 			"com.gnottero.asclepius.Asclepius"
 		],
+		"client": [
+			"com.gnottero.asclepius.AsclepiusClient"
+		],
 		"fabric-datagen": [
 			"com.gnottero.asclepius.datagen.AsclepiusDataGenerator"
 		]
@@ -33,10 +36,6 @@
 		"fabricloader": ">=0.19.3",
 		"minecraft": "~26.2",
 		"java": ">=25",
-		"fabric-api": "*",
-		"polymer-core": ">=0.17.0",
-		"polymer-blocks": ">=0.17.0",
-		"polymer-virtual-entity": ">=0.17.0",
-		"factorytools": ">=0.11.0"
+		"fabric-api": "*"
 	}
 }

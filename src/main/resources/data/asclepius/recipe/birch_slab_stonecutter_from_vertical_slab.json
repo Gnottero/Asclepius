@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:birch_vertical_slab",
+  "result": {
+    "id": "minecraft:birch_slab"
+  }
+}

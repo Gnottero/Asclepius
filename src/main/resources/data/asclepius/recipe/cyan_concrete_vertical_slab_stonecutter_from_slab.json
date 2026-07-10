@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:cyan_concrete_slab",
+  "result": {
+    "id": "asclepius:cyan_concrete_vertical_slab"
+  }
+}

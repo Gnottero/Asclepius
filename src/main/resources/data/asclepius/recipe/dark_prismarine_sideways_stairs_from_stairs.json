@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:dark_prismarine_stairs"
+  ],
+  "result": {
+    "id": "asclepius:dark_prismarine_sideways_stairs"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:cobblestone_stairs"
+  ],
+  "result": {
+    "id": "asclepius:cobblestone_sideways_stairs"
+  }
+}

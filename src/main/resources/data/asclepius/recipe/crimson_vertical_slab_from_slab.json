@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:crimson_slab"
+  ],
+  "result": {
+    "id": "asclepius:crimson_vertical_slab"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "asclepius:lime_wool_stairs"
+  ],
+  "result": {
+    "id": "asclepius:lime_wool_sideways_stairs"
+  }
+}

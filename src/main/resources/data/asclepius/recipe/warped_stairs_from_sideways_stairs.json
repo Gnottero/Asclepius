@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "asclepius:warped_sideways_stairs"
+  ],
+  "result": {
+    "id": "minecraft:warped_stairs"
+  }
+}

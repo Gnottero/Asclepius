@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:prismarine_sideways_stairs",
+  "result": {
+    "id": "minecraft:prismarine_stairs"
+  }
+}

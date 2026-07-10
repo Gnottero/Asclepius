@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:cobbled_deepslate_vertical_slab",
+  "result": {
+    "id": "minecraft:cobbled_deepslate_slab"
+  }
+}

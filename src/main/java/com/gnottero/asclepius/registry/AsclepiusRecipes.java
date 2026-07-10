@@ -1,12 +1,12 @@
 package com.gnottero.asclepius.registry;
 
 import com.gnottero.asclepius.Asclepius;
-import com.gnottero.asclepius.recipe.AltarRecipe;
-import com.gnottero.asclepius.recipe.AltarRecipeSerializer;
-import com.gnottero.asclepius.recipe.EnchantmentMergeRecipe;
-import com.gnottero.asclepius.recipe.EnchantmentMergeRecipeSerializer;
-import com.gnottero.asclepius.recipe.SocketGrantRecipe;
-import com.gnottero.asclepius.recipe.SocketGrantRecipeSerializer;
+import com.gnottero.asclepius.feature.pale_altar.recipe.AltarRecipe;
+import com.gnottero.asclepius.feature.pale_altar.recipe.AltarRecipeSerializer;
+import com.gnottero.asclepius.feature.pale_altar.recipe.EnchantmentMergeRecipe;
+import com.gnottero.asclepius.feature.pale_altar.recipe.EnchantmentMergeRecipeSerializer;
+import com.gnottero.asclepius.feature.pale_altar.recipe.SocketGrantRecipe;
+import com.gnottero.asclepius.feature.pale_altar.recipe.SocketGrantRecipeSerializer;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;

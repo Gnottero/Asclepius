@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:jungle_stairs"
+  ],
+  "result": {
+    "id": "asclepius:jungle_sideways_stairs"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:polished_blackstone_stairs"
+  ],
+  "result": {
+    "id": "asclepius:polished_blackstone_sideways_stairs"
+  }
+}

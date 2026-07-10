@@ -1,6 +1,7 @@
 package com.gnottero.asclepius.datagen;
 
 import com.gnottero.asclepius.registry.AsclepiusBlocks;
+import com.gnottero.asclepius.registry.AsclepiusDecorativeBlocks;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;
@@ -33,5 +34,15 @@ public class AsclepiusBlockTagProvider extends FabricTagsProvider.BlockTagsProvi
 
         builder(BlockTags.MINEABLE_WITH_HOE)
                 .add(AsclepiusBlocks.TERU_TERU_BOZU.builtInRegistryHolder().key());
+
+        addDecorativeBlockTags();
+    }
+
+    // Kept here rather than a second FabricTagsProvider.BlockTagsProvider — vanilla's
+    // TagsProvider#getName() is final and derived from the registry key alone, so a
+    // second block-tags provider instance would collide with this one under the same pack.
+    private void addDecorativeBlockTags() {
+        var wallsBuilder = builder(BlockTags.WALLS);
+        AsclepiusDecorativeBlocks.WALLS.values().forEach(wall -> wallsBuilder.add(wall.builtInRegistryHolder().key()));
     }
 }

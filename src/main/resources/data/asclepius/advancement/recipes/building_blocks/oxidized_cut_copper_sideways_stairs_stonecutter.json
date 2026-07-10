@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_oxidized_cut_copper": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:oxidized_cut_copper"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "asclepius:oxidized_cut_copper_sideways_stairs_stonecutter"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_oxidized_cut_copper"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "asclepius:oxidized_cut_copper_sideways_stairs_stonecutter"
+    ]
+  }
+}

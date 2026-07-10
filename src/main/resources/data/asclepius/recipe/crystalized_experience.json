@@ -1,0 +1,16 @@
+{
+  "type": "asclepius:altar",
+  "consume_catalyst": false,
+  "base": {
+    "id": "asclepius:fox_amulet"
+  },
+  "catalyst": {
+    "id": "asclepius:fox_amulet"
+  },
+  "result": {
+    "id": "asclepius:crystalized_experience"
+  },
+  "conditions": {
+    "required_levels": 100
+  }
+}

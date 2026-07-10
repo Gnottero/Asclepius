@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_red_sandstone_stairs": {
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:red_sandstone_stairs"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "asclepius:red_sandstone_sideways_stairs_stonecutter_from_stairs"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_red_sandstone_stairs"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "asclepius:red_sandstone_sideways_stairs_stonecutter_from_stairs"
+    ]
+  }
+}

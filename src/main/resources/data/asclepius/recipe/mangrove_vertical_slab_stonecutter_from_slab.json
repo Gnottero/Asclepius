@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "minecraft:mangrove_slab",
+  "result": {
+    "id": "asclepius:mangrove_vertical_slab"
+  }
+}

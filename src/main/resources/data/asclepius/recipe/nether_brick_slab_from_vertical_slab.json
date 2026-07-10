@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "asclepius:nether_brick_vertical_slab"
+  ],
+  "result": {
+    "id": "minecraft:nether_brick_slab"
+  }
+}

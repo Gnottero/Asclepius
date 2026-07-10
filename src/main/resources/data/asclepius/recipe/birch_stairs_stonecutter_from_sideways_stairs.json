@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:birch_sideways_stairs",
+  "result": {
+    "id": "minecraft:birch_stairs"
+  }
+}

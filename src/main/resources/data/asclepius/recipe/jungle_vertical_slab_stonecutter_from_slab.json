@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "minecraft:jungle_slab",
+  "result": {
+    "id": "asclepius:jungle_vertical_slab"
+  }
+}

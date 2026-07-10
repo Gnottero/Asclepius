@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:lime_concrete_stairs",
+  "result": {
+    "id": "asclepius:lime_concrete_sideways_stairs"
+  }
+}

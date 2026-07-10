@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:bamboo_mosaic_sideways_stairs",
+  "result": {
+    "id": "minecraft:bamboo_mosaic_stairs"
+  }
+}

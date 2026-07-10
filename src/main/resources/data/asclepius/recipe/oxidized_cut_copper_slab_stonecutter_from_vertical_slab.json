@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:oxidized_cut_copper_vertical_slab",
+  "result": {
+    "id": "minecraft:oxidized_cut_copper_slab"
+  }
+}

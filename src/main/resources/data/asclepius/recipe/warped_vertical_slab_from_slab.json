@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:warped_slab"
+  ],
+  "result": {
+    "id": "asclepius:warped_vertical_slab"
+  }
+}

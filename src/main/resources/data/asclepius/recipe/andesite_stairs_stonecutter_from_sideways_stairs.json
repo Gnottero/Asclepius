@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:andesite_sideways_stairs",
+  "result": {
+    "id": "minecraft:andesite_stairs"
+  }
+}

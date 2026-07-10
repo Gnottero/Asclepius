@@ -1,8 +1,8 @@
 package com.gnottero.asclepius.datagen;
 
-import com.gnottero.asclepius.Asclepius;
 import com.gnottero.asclepius.mixin.client.ItemModelGeneratorsAccessor;
 import com.gnottero.asclepius.registry.AsclepiusBlocks;
+import com.gnottero.asclepius.registry.AsclepiusDecorativeBlocks;
 import com.gnottero.asclepius.registry.AsclepiusItems;
 
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
@@ -15,6 +15,7 @@ import net.minecraft.client.data.models.model.ItemModelUtils;
 import net.minecraft.client.data.models.model.ModelInstance;
 import net.minecraft.client.data.models.model.ModelTemplates;
 import net.minecraft.client.data.models.model.TextureMapping;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -33,6 +34,38 @@ public class AsclepiusModelProvider extends FabricModelProvider {
         generateColumnModel(generators, AsclepiusBlocks.SHALE);
         generateColumnModel(generators, AsclepiusBlocks.PACKED_SHALE);
         generateCubeBottomTopModel(generators, AsclepiusBlocks.CHUNK_LOADER);
+        generateDecorativeBlockModels(generators);
+    }
+
+    // -------------------------------------------------------------------------
+    // Decorative block-family models
+    // Kept as a separate method (rather than a second FabricModelProvider) because
+    // vanilla's ModelProvider#getName() is final — a second provider instance would
+    // collide with this one under the same pack.
+    // -------------------------------------------------------------------------
+
+    private static void generateDecorativeBlockModels(BlockModelGenerators generators) {
+        // 1. Vanilla slabs -> Register vertical slab and sideways stairs
+        AsclepiusDecorativeBlocks.VANILLA_SLAB_BLOCKS.forEach(vanillaSlab -> {
+            Block vertSlab = AsclepiusDecorativeBlocks.VERTICAL_SLABS.get(vanillaSlab);
+            if (vertSlab != null) {
+                VerticalSlabModelGenerator.registerVerticalSlabFromVanillaSlab(generators, vertSlab, vanillaSlab);
+            }
+            Block sidewaysStair = AsclepiusDecorativeBlocks.SIDEWAYS_STAIRS.get(vanillaSlab);
+            if (sidewaysStair != null) {
+                SidewaysStairModelGenerator.registerSidewaysStairFromVanillaSlab(generators, sidewaysStair, vanillaSlab);
+            }
+        });
+
+        // 2. Custom base blocks -> Register custom slab, stairs, sideways stairs, vertical slab, and wall
+        AsclepiusDecorativeBlocks.CUSTOM_BASE_BLOCKS.forEach(baseBlock -> {
+            new DecorativeFamilyProvider(generators, baseBlock)
+                    .slab(AsclepiusDecorativeBlocks.SLABS.get(baseBlock))
+                    .stairs(AsclepiusDecorativeBlocks.STAIRS.get(baseBlock))
+                    .sidewaysStair(AsclepiusDecorativeBlocks.SIDEWAYS_STAIRS.get(baseBlock))
+                    .verticalSlab(AsclepiusDecorativeBlocks.VERTICAL_SLABS.get(baseBlock))
+                    .wall(AsclepiusDecorativeBlocks.WALLS.get(baseBlock));
+        });
     }
 
     @Override
@@ -59,29 +92,33 @@ public class AsclepiusModelProvider extends FabricModelProvider {
 
         generateFlat(AsclepiusItems.ENDER_KEY, itemOutput, modelOutput);
         generateFlat(AsclepiusItems.RECALL_EYE, itemOutput, modelOutput);
+        generateFlat(AsclepiusItems.GOLDEN_EYE, itemOutput, modelOutput);
+
+        generateFlat(AsclepiusItems.GAIA_INGOT, itemOutput, modelOutput);
+        generateFlat(AsclepiusItems.ANCIENT_INGOT, itemOutput, modelOutput);
+        generateFlat(AsclepiusItems.CRYSTALIZED_EXPERIENCE, itemOutput, modelOutput);
 
         generateFlat(AsclepiusItems.ANCIENT_SQUID_RELIC, itemOutput, modelOutput);
 
-        itemOutput.accept(AsclepiusItems.TERU_TERU_BOZU, ItemModelUtils.plainModel(Identifier.fromNamespaceAndPath("asclepius", "block/teru_teru_bozu")));
-        itemOutput.accept(AsclepiusItems.PALE_ALTAR, ItemModelUtils.plainModel(Identifier.fromNamespaceAndPath("asclepius", "block/pale_altar")));
-        itemOutput.accept(AsclepiusItems.VOLCANIC_ASH, ItemModelUtils.plainModel(Identifier.fromNamespaceAndPath("asclepius", "block/volcanic_ash")));
-        itemOutput.accept(AsclepiusItems.SHALE, ItemModelUtils.plainModel(Identifier.fromNamespaceAndPath("asclepius", "block/shale")));
-        itemOutput.accept(AsclepiusItems.PACKED_SHALE, ItemModelUtils.plainModel(Identifier.fromNamespaceAndPath("asclepius", "block/packed_shale")));
-        itemOutput.accept(AsclepiusItems.CHUNK_LOADER, ItemModelUtils.plainModel(Identifier.fromNamespaceAndPath("asclepius", "block/chunk_loader")));
+        registerBlockItemModel(AsclepiusBlocks.TERU_TERU_BOZU, AsclepiusItems.TERU_TERU_BOZU, itemOutput);
+        registerBlockItemModel(AsclepiusBlocks.PALE_ALTAR, AsclepiusItems.PALE_ALTAR, itemOutput);
+        registerBlockItemModel(AsclepiusBlocks.VOLCANIC_ASH, AsclepiusItems.VOLCANIC_ASH, itemOutput);
+        registerBlockItemModel(AsclepiusBlocks.SHALE, AsclepiusItems.SHALE, itemOutput);
+        registerBlockItemModel(AsclepiusBlocks.PACKED_SHALE, AsclepiusItems.PACKED_SHALE, itemOutput);
+        registerBlockItemModel(AsclepiusBlocks.CHUNK_LOADER, AsclepiusItems.CHUNK_LOADER, itemOutput);
     }
 
     // -------------------------------------------------------------------------
-    // Polymer block model helpers
-    // These only write the model JSON — no blockstate file is generated.
-    // The modelId you pass to GenericTexturedBlock must match the output path.
+    // Block model helpers
+    // These only write the model JSON — the matching blockstate file (referencing
+    // the generated model by registry name) is hand-authored under
+    // assets/asclepius/blockstates/.
     // -------------------------------------------------------------------------
 
     /**
      * Full cube — every face uses the same texture.
      * Texture resolved from block registry name automatically:
      *   asclepius:my_block → textures/block/my_block.png
-     *
-     * Pass the modelId "block/my_block" to GenericTexturedBlock.
      */
     private static void generateFullCubeModel(BlockModelGenerators generators, Block block) {
         var mapping = TextureMapping.cube(block);
@@ -93,8 +130,6 @@ public class AsclepiusModelProvider extends FabricModelProvider {
      * Expected texture files:
      *   textures/block/<name>_top.png
      *   textures/block/<name>_side.png   (or _end for logs)
-     *
-     * Pass the modelId "block/my_pillar" to GenericTexturedBlock.
      */
     private static void generateColumnModel(BlockModelGenerators generators, Block block) {
         var mapping = TextureMapping.column(block);
@@ -127,5 +162,13 @@ public class AsclepiusModelProvider extends FabricModelProvider {
                                      BiConsumer<Identifier, ModelInstance> modelOutput) {
         var id = ModelTemplates.FLAT_ITEM.create(item, TextureMapping.layer0(item), modelOutput);
         itemOutput.accept(item, ItemModelUtils.plainModel(id));
+    }
+
+    // Points the item model at the block model generated above by deriving the
+    // path from the block's own registry name, instead of a hand-typed string
+    // literal that could silently drift from the block if either is renamed.
+    private static void registerBlockItemModel(Block block, Item item, ItemModelOutput itemOutput) {
+        Identifier blockId = BuiltInRegistries.BLOCK.getKey(block);
+        itemOutput.accept(item, ItemModelUtils.plainModel(blockId.withPrefix("block/")));
     }
 }

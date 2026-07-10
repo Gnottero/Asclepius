@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:cobbled_deepslate_sideways_stairs",
+  "result": {
+    "id": "minecraft:cobbled_deepslate_stairs"
+  }
+}

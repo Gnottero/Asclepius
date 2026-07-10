@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "asclepius:resin_brick_vertical_slab"
+  ],
+  "result": {
+    "id": "minecraft:resin_brick_slab"
+  }
+}

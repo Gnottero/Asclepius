@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "asclepius:purpur_vertical_slab"
+  ],
+  "result": {
+    "id": "minecraft:purpur_slab"
+  }
+}

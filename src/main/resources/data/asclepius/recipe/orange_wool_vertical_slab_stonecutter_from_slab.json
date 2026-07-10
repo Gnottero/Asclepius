@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:orange_wool_slab",
+  "result": {
+    "id": "asclepius:orange_wool_vertical_slab"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "asclepius:polished_tuff_vertical_slab"
+  ],
+  "result": {
+    "id": "minecraft:polished_tuff_slab"
+  }
+}

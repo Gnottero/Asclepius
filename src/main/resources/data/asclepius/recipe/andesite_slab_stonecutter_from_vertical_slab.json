@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:andesite_vertical_slab",
+  "result": {
+    "id": "minecraft:andesite_slab"
+  }
+}

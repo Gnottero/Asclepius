@@ -28,12 +28,18 @@ public abstract class EndCityElytraMixin extends StructurePiece {
         super(type, genDepth, boundingBox);
     }
 
+    // Injects at the head of vanilla's per-structure-piece data-marker handler and
+    // cancels it for the "Elytra" marker specifically, hijacking the spot where
+    // vanilla would place the item-frame-with-elytra to place a loot vault instead.
     @Inject(method = "handleDataMarker", at = @At("HEAD"), cancellable = true)
     private void replaceElytraWithVault(String markerId, BlockPos position, ServerLevelAccessor level, RandomSource random, BoundingBox chunkBB, CallbackInfo ci) {
         if (!markerId.equals("Elytra")) return;
 
         ci.cancel();
 
+        // Structure pieces store their rotation relative to a canonical orientation;
+        // rotating SOUTH (the template's "front") gives the facing this piece was
+        // actually placed with, which the vault needs to face the right way.
         Direction facing = this.getRotation().rotate(Direction.SOUTH);
 
         BlockPos vaultPos = position.below();

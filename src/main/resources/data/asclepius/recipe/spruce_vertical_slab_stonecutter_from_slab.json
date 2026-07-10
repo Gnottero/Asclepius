@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "minecraft:spruce_slab",
+  "result": {
+    "id": "asclepius:spruce_vertical_slab"
+  }
+}

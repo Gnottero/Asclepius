@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:cinnabar_brick_vertical_slab",
+  "result": {
+    "id": "minecraft:cinnabar_brick_slab"
+  }
+}

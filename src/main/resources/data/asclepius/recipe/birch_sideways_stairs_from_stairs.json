@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "minecraft:birch_stairs"
+  ],
+  "result": {
+    "id": "asclepius:birch_sideways_stairs"
+  }
+}

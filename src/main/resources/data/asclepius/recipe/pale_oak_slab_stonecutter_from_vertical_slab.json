@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:pale_oak_vertical_slab",
+  "result": {
+    "id": "minecraft:pale_oak_slab"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "minecraft:prismarine_slab",
+  "result": {
+    "id": "asclepius:prismarine_vertical_slab"
+  }
+}

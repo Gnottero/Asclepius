@@ -1,15 +1,15 @@
 package com.gnottero.asclepius.registry;
 
 import com.gnottero.asclepius.Asclepius;
-import com.gnottero.asclepius.item.forgotten_relics.AttributeRelicItem;
-import com.gnottero.asclepius.item.misc.EnderKeyItem;
-import com.gnottero.asclepius.item.misc.EyeOfRecallItem;
-import com.gnottero.asclepius.item.misc.FoxAmulet;
-import com.gnottero.asclepius.item.tools.HammerItem;
-import com.gnottero.asclepius.item.tools.PaxelItem;
-import eu.pb4.factorytools.api.item.FactoryBlockItem;
-import eu.pb4.polymer.core.api.block.PolymerBlock;
-import eu.pb4.polymer.core.api.item.PolymerCreativeModeTabUtils;
+import com.gnottero.asclepius.feature.forgotten_relics.AttributeRelicItem;
+import com.gnottero.asclepius.feature.forgotten_relics.ForgottenRelicItem;
+import com.gnottero.asclepius.feature.misc.EnderKeyItem;
+import com.gnottero.asclepius.feature.misc.FoxAmuletItem;
+import com.gnottero.asclepius.feature.recall.EyeOfRecallItem;
+import com.gnottero.asclepius.feature.recall.GoldenEyeOfRecall;
+import com.gnottero.asclepius.feature.tools.HammerItem;
+import com.gnottero.asclepius.feature.tools.PaxelItem;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -28,6 +28,16 @@ import net.minecraft.world.level.block.Block;
 
 import java.util.function.Function;
 
+/**
+ * Item registration composition root. Three tiers of registration helper exist,
+ * from most to least generic — pick the narrowest one that fits a new item:
+ * {@code registerItem} (bare registration, any item), {@code registerTool}/
+ * {@code registerHammer}/{@code registerPaxel} (tool families needing a material +
+ * repair tag + attack stats per instance), and {@code registerRelic} (Forgotten
+ * Relics — constrains the factory's return type to {@code ForgottenRelicItem} for
+ * call-site clarity). New content types with their own recurring registration shape
+ * should get their own tier here rather than repeating boilerplate at each call site.
+ */
 public class AsclepiusItems {
 
     // ── Misc ──────────────────────────────────────────────────────────────────
@@ -36,15 +46,24 @@ public class AsclepiusItems {
             p -> new EnderKeyItem(p.fireResistant()));
 
     public static final Item FOX_AMULET = registerItem("fox_amulet",
-            p -> new FoxAmulet(p.fireResistant().stacksTo(1).durability(3)));
+            p -> new FoxAmuletItem(p.fireResistant().stacksTo(1).durability(3)));
 
     public static final Item RECALL_EYE = registerItem("eye_of_recall",
-            p -> new EyeOfRecallItem(p.component(AsclepiusComponents.EYE_CHARGE, 0).stacksTo(1).useCooldown(10.0f)));
+            p -> new EyeOfRecallItem(p.stacksTo(1).useCooldown(10.0f)));
+
+    public static final Item GOLDEN_EYE = registerItem("golden_eye_of_recall",
+            p -> new GoldenEyeOfRecall(p.stacksTo(1).useCooldown(10.0f)));
+
+    // ── Materials ─────────────────────────────────────────────────────────────
+
+    public static final Item GAIA_INGOT             = registerItem("gaia_ingot", Item::new);
+    public static final Item ANCIENT_INGOT          = registerItem("ancient_ingot", Item::new);
+    public static final Item CRYSTALIZED_EXPERIENCE = registerItem("crystalized_experience", Item::new);
 
     // ── Forgotten Relics ──────────────────────────────────────────────────────
 
-    public static final Item ANCIENT_SQUID_RELIC = registerItem("ancient_squid_relic",
-            p -> new AttributeRelicItem(p, "ancient_squid_relic", DataComponents.TOOL,
+    public static final Item ANCIENT_SQUID_RELIC = registerRelic("ancient_squid_relic",
+            p -> new AttributeRelicItem(p, DataComponents.TOOL,
                     Attributes.BLOCK_INTERACTION_RANGE, 1, AttributeModifier.Operation.ADD_VALUE, EquipmentSlotGroup.MAINHAND, SoundEvents.GLOW_SQUID_SQUIRT));
 
     // ── Hammers ───────────────────────────────────────────────────────────────
@@ -104,10 +123,10 @@ public class AsclepiusItems {
                 factory.apply(new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id))));
     }
 
-    private static <E extends Block & PolymerBlock> FactoryBlockItem registerBlockItem(E block) {
+    static <E extends Block> BlockItem registerBlockItem(E block) {
         var id = BuiltInRegistries.BLOCK.getKey(block);
         var settings = new Item.Properties().setId(ResourceKey.create(Registries.ITEM, id)).useBlockDescriptionPrefix();
-        return Registry.register(BuiltInRegistries.ITEM, id, new FactoryBlockItem(block, settings));
+        return Registry.register(BuiltInRegistries.ITEM, id, new BlockItem(block, settings));
     }
 
     @FunctionalInterface
@@ -115,42 +134,59 @@ public class AsclepiusItems {
         T create(ToolMaterial material, float attackDamage, float attackSpeed, Item.Properties properties, String name, TagKey<Item> repairTag);
     }
 
+    // Mirrors registerTool/ToolFactory for relic registrations — mainly a
+    // call-site readability/type-bound aid (constrains T to ForgottenRelicItem),
+    // since relics don't need extra per-instance registration params the way
+    // tools need name/repairTag.
+    private static <T extends ForgottenRelicItem> T registerRelic(String name, RelicFactory<T> factory) {
+        return registerItem(name, factory::create);
+    }
+
+    @FunctionalInterface
+    interface RelicFactory<T extends ForgottenRelicItem> {
+        T create(Item.Properties properties);
+    }
+
     // ── Creative tab ──────────────────────────────────────────────────────────
 
     public static void registerAll() {
-        PolymerCreativeModeTabUtils.registerPolymerCreativeModeTab(
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB,
                 Identifier.fromNamespaceAndPath(Asclepius.MOD_ID, "a_group"),
-                PolymerCreativeModeTabUtils.builder()
+                FabricCreativeModeTab.builder()
                         .icon(() -> RECALL_EYE.getDefaultInstance())
                         .title(Component.translatable("itemgroup." + Asclepius.MOD_ID))
-                        .displayItems((context, entries) -> {
-                            entries.accept(ENDER_KEY);
-                            entries.accept(FOX_AMULET);
-                            entries.accept(ANCIENT_SQUID_RELIC);
-                            entries.accept(RECALL_EYE);
+                        .displayItems((params, output) -> {
+                            output.accept(ENDER_KEY);
+                            output.accept(FOX_AMULET);
+                            output.accept(GAIA_INGOT);
+                            output.accept(ANCIENT_INGOT);
+                            output.accept(CRYSTALIZED_EXPERIENCE);
+                            output.accept(ANCIENT_SQUID_RELIC);
+                            output.accept(RECALL_EYE);
+                            output.accept(GOLDEN_EYE);
 
-                            entries.accept(WOODEN_HAMMER);
-                            entries.accept(STONE_HAMMER);
-                            entries.accept(COPPER_HAMMER);
-                            entries.accept(IRON_HAMMER);
-                            entries.accept(GOLDEN_HAMMER);
-                            entries.accept(DIAMOND_HAMMER);
-                            entries.accept(NETHERITE_HAMMER);
+                            output.accept(WOODEN_HAMMER);
+                            output.accept(STONE_HAMMER);
+                            output.accept(COPPER_HAMMER);
+                            output.accept(IRON_HAMMER);
+                            output.accept(GOLDEN_HAMMER);
+                            output.accept(DIAMOND_HAMMER);
+                            output.accept(NETHERITE_HAMMER);
 
-                            entries.accept(WOODEN_PAXEL);
-                            entries.accept(STONE_PAXEL);
-                            entries.accept(COPPER_PAXEL);
-                            entries.accept(IRON_PAXEL);
-                            entries.accept(GOLDEN_PAXEL);
-                            entries.accept(DIAMOND_PAXEL);
-                            entries.accept(NETHERITE_PAXEL);
+                            output.accept(WOODEN_PAXEL);
+                            output.accept(STONE_PAXEL);
+                            output.accept(COPPER_PAXEL);
+                            output.accept(IRON_PAXEL);
+                            output.accept(GOLDEN_PAXEL);
+                            output.accept(DIAMOND_PAXEL);
+                            output.accept(NETHERITE_PAXEL);
 
-                            entries.accept(TERU_TERU_BOZU);
-                            entries.accept(PALE_ALTAR);
-                            entries.accept(VOLCANIC_ASH);
-                            entries.accept(SHALE);
-                            entries.accept(PACKED_SHALE);
-                            entries.accept(CHUNK_LOADER);
+                            output.accept(TERU_TERU_BOZU);
+                            output.accept(PALE_ALTAR);
+                            output.accept(VOLCANIC_ASH);
+                            output.accept(SHALE);
+                            output.accept(PACKED_SHALE);
+                            output.accept(CHUNK_LOADER);
                         }).build());
 
         Asclepius.LOGGER.info("[{}]> Register Items", Asclepius.MOD_ID);

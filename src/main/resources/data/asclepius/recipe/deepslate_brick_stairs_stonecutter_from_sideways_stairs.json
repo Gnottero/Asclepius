@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:deepslate_brick_sideways_stairs",
+  "result": {
+    "id": "minecraft:deepslate_brick_stairs"
+  }
+}

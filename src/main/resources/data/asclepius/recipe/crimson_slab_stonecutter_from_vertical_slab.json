@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:crimson_vertical_slab",
+  "result": {
+    "id": "minecraft:crimson_slab"
+  }
+}

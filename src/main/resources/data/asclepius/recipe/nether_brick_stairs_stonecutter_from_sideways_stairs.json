@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:nether_brick_sideways_stairs",
+  "result": {
+    "id": "minecraft:nether_brick_stairs"
+  }
+}

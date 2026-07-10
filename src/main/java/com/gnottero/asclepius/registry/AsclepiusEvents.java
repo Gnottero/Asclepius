@@ -1,6 +1,6 @@
 package com.gnottero.asclepius.registry;
 
-import com.gnottero.asclepius.event.HammerBreakHandler;
+import com.gnottero.asclepius.feature.tools.HammerBreakHandler;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 
 public class AsclepiusEvents {

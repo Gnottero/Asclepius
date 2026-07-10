@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:mangrove_sideways_stairs",
+  "result": {
+    "id": "minecraft:mangrove_stairs"
+  }
+}

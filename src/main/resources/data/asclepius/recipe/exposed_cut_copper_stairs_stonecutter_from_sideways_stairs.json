@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:exposed_cut_copper_sideways_stairs",
+  "result": {
+    "id": "minecraft:exposed_cut_copper_stairs"
+  }
+}

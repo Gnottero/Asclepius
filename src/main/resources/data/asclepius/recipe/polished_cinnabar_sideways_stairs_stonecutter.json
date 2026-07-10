@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "minecraft:polished_cinnabar",
+  "result": {
+    "id": "asclepius:polished_cinnabar_sideways_stairs"
+  }
+}

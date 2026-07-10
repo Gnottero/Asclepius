@@ -12,5 +12,9 @@ public class AsclepiusDataGenerator implements DataGeneratorEntrypoint {
         pack.addProvider(AsclepiusBlockLootTableProvider::new);
         pack.addProvider((output, registries) -> new AsclepiusBlockTagProvider(output, registries));
         pack.addProvider((output, registries) -> new AsclepiusItemTagProvider(output, registries));
+
+        pack.addProvider(AsclepiusDecorativeBlockLootTableProvider::new);
+        pack.addProvider(AsclepiusLangProvider::new);
+        pack.addProvider(AsclepiusDecorativeRecipeProvider::new);
     }
 }

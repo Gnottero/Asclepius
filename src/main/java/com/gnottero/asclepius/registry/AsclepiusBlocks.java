@@ -1,12 +1,9 @@
 package com.gnottero.asclepius.registry;
 
 import com.gnottero.asclepius.Asclepius;
-import com.gnottero.asclepius.block.ChunkLoaderBlock;
-import com.gnottero.asclepius.block.GenericTexturedBlock;
-import com.gnottero.asclepius.block.PaleAltarBlock;
-import com.gnottero.asclepius.block.TeruTeruBozuBlock;
-import eu.pb4.polymer.blocks.api.BlockModelType;
-import eu.pb4.polymer.blocks.api.PolymerTexturedBlock;
+import com.gnottero.asclepius.feature.chunk_loader.ChunkLoaderBlock;
+import com.gnottero.asclepius.feature.pale_altar.PaleAltarBlock;
+import com.gnottero.asclepius.feature.teru_teru_bozu.TeruTeruBozuBlock;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -23,7 +20,7 @@ public class AsclepiusBlocks {
 
     public static final TeruTeruBozuBlock TERU_TERU_BOZU = register(
             "teru_teru_bozu",
-            Blocks.LANTERN,
+            Blocks.AMETHYST_BLOCK,
             (properties, ignored) -> new TeruTeruBozuBlock(properties.noOcclusion())
     );
 
@@ -33,28 +30,28 @@ public class AsclepiusBlocks {
             (properties, ignored) -> new PaleAltarBlock(properties.noOcclusion())
     );
 
-    public static final GenericTexturedBlock VOLCANIC_ASH = register(
+    public static final Block VOLCANIC_ASH = register(
             "volcanic_ash",
             Blocks.SAND,
-            (properties, ignored) -> new GenericTexturedBlock(properties, BlockModelType.FULL_BLOCK, "block/volcanic_ash")
+            (properties, ignored) -> new Block(properties)
     );
 
-    public static final GenericTexturedBlock SHALE = register(
+    public static final Block SHALE = register(
             "shale",
             Blocks.DEEPSLATE,
-            (properties, ignored) -> new GenericTexturedBlock(properties, BlockModelType.FULL_BLOCK, "block/shale")
+            (properties, ignored) -> new Block(properties)
     );
 
-    public static final GenericTexturedBlock PACKED_SHALE = register(
+    public static final Block PACKED_SHALE = register(
             "packed_shale",
             Blocks.DEEPSLATE,
-            (properties, ignored) -> new GenericTexturedBlock(properties.strength(6.0F, 9.0F), BlockModelType.FULL_BLOCK, "block/packed_shale")
+            (properties, ignored) -> new Block(properties.strength(6.0F, 9.0F))
     );
 
     public static final ChunkLoaderBlock CHUNK_LOADER = register(
             "chunk_loader",
             Blocks.LODESTONE,
-            (properties, ignored) -> new ChunkLoaderBlock(properties, BlockModelType.FULL_BLOCK, "block/chunk_loader")
+            (properties, ignored) -> new ChunkLoaderBlock(properties)
     );
 
     public static <T extends Block, Y extends Block> T register(String path, Y copyFrom, BiFunction<BlockBehaviour.Properties, Y, T> function) {

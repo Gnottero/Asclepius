@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:polished_granite_vertical_slab",
+  "result": {
+    "id": "minecraft:polished_granite_slab"
+  }
+}

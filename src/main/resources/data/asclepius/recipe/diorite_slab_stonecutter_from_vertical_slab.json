@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:diorite_vertical_slab",
+  "result": {
+    "id": "minecraft:diorite_slab"
+  }
+}

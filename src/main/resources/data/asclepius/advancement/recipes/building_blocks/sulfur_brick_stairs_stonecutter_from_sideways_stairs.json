@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_sulfur_brick_sideways_stairs": {
+      "conditions": {
+        "items": [
+          {
+            "items": "asclepius:sulfur_brick_sideways_stairs"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "asclepius:sulfur_brick_stairs_stonecutter_from_sideways_stairs"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_sulfur_brick_sideways_stairs"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "asclepius:sulfur_brick_stairs_stonecutter_from_sideways_stairs"
+    ]
+  }
+}

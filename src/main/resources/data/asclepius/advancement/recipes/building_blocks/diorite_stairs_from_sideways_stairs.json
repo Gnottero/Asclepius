@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_diorite_sideways_stairs": {
+      "conditions": {
+        "items": [
+          {
+            "items": "asclepius:diorite_sideways_stairs"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "asclepius:diorite_stairs_from_sideways_stairs"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_diorite_sideways_stairs"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "asclepius:diorite_stairs_from_sideways_stairs"
+    ]
+  }
+}

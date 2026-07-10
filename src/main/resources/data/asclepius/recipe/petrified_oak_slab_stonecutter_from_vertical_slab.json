@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:petrified_oak_vertical_slab",
+  "result": {
+    "id": "minecraft:petrified_oak_slab"
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "variants": {
+    "facing=east,flipped=false": {
+      "model": "asclepius:block/deepslate_tile_sideways_stairs",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=east,flipped=true": {
+      "model": "asclepius:block/deepslate_tile_sideways_stairs_flipped",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=north,flipped=false": {
+      "model": "asclepius:block/deepslate_tile_sideways_stairs",
+      "uvlock": true
+    },
+    "facing=north,flipped=true": {
+      "model": "asclepius:block/deepslate_tile_sideways_stairs_flipped",
+      "uvlock": true
+    },
+    "facing=south,flipped=false": {
+      "model": "asclepius:block/deepslate_tile_sideways_stairs",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=south,flipped=true": {
+      "model": "asclepius:block/deepslate_tile_sideways_stairs_flipped",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=west,flipped=false": {
+      "model": "asclepius:block/deepslate_tile_sideways_stairs",
+      "uvlock": true,
+      "y": 270
+    },
+    "facing=west,flipped=true": {
+      "model": "asclepius:block/deepslate_tile_sideways_stairs_flipped",
+      "uvlock": true,
+      "y": 270
+    }
+  }
+}

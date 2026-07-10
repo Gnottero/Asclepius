@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:mossy_cobblestone_vertical_slab",
+  "result": {
+    "id": "minecraft:mossy_cobblestone_slab"
+  }
+}

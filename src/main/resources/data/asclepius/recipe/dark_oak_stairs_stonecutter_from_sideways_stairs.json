@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "asclepius:dark_oak_sideways_stairs",
+  "result": {
+    "id": "minecraft:dark_oak_stairs"
+  }
+}
