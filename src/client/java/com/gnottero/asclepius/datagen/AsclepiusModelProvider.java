@@ -92,7 +92,7 @@ public class AsclepiusModelProvider extends FabricModelProvider {
 
         generateFlat(AsclepiusItems.ENDER_KEY, itemOutput, modelOutput);
         generateFlat(AsclepiusItems.RECALL_EYE, itemOutput, modelOutput);
-        generateFlat(AsclepiusItems.GOLDEN_EYE, itemOutput, modelOutput);
+        generateFlat(AsclepiusItems.GAIA_EYE, itemOutput, modelOutput);
 
         generateFlat(AsclepiusItems.GAIA_INGOT, itemOutput, modelOutput);
         generateFlat(AsclepiusItems.ANCIENT_INGOT, itemOutput, modelOutput);

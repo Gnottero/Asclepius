@@ -1,0 +1,30 @@
+{
+  "type": "asclepius:altar",
+  "base": {
+    "id": "asclepius:ancient_ingot"
+  },
+  "catalyst": {
+    "id": "asclepius:crystalized_experience"
+  },
+  "result": {
+    "id": "asclepius:gaia_ingot"
+  },
+  "conditions": {
+    "required_levels": 150,
+    "failure_chance": 0.25,
+    "failure_mobs": [
+      {
+        "entity": "minecraft:warden",
+        "weight": 1,
+        "min_count": 1,
+        "max_count": 1
+      },
+      {
+        "entity": "minecraft:wither_skeleton",
+        "weight": 4,
+        "min_count": 2,
+        "max_count": 3
+      }
+    ]
+  }
+}

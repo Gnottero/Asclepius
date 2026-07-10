@@ -8,6 +8,7 @@ import com.gnottero.asclepius.feature.pale_altar.recipe.EnchantmentMergeRecipeSe
 import com.gnottero.asclepius.feature.pale_altar.recipe.SocketGrantRecipe;
 import com.gnottero.asclepius.feature.pale_altar.recipe.SocketGrantRecipeSerializer;
 import com.mojang.serialization.MapCodec;
+import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -46,6 +47,14 @@ public class AsclepiusRecipes {
     }
 
     public static void registerAll() {
+        // Custom recipe types aren't sent to the client by default (Fabric's opt-in
+        // recipe sync) — altar/socket-grant recipes need to be synced so client-side
+        // tooltip/ambient hints can read them via SynchronizedRecipes.getAllOfType.
+        // EnchantmentMergeRecipe is intentionally left out: it's a zero-config
+        // singleton recipe with nothing informative for a client-side hint to read.
+        RecipeSynchronization.synchronizeRecipeSerializer(ALTAR_SERIALIZER);
+        RecipeSynchronization.synchronizeRecipeSerializer(SOCKET_GRANT_SERIALIZER);
+
         Asclepius.LOGGER.info("[" + Asclepius.MOD_ID + "]> " + "Register Recipes");
     }
 }

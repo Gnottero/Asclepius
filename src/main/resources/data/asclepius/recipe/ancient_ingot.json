@@ -1,0 +1,14 @@
+{
+  "type": "asclepius:altar",
+  "base": { "id": "minecraft:netherite_ingot" },
+  "catalyst": { "id": "minecraft:nether_star" },
+  "result": { "id": "asclepius:ancient_ingot" },
+  "conditions": {
+    "required_levels": 50,
+    "failure_chance": 0.15,
+    "failure_mobs": [
+      { "entity": "minecraft:wither_skeleton", "weight": 3, "min_count": 1, "max_count": 2 },
+      { "entity": "minecraft:vex", "weight": 1, "min_count": 2, "max_count": 4 }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "asclepius:socket_grant",
+  "consume_catalyst": true,
+  "base": { "id": "#minecraft:pickaxes" },
+  "catalyst": { "id": "minecraft:nether_star", "count": 1 },
+  "sockets": 1,
+  "max_sockets": 3,
+  "conditions": {
+    "required_levels": 60,
+    "require_night": true,
+    "failure_chance": 0.20,
+    "failure_mobs": [
+      { "entity": "minecraft:vindicator", "weight": 4, "min_count": 1, "max_count": 2 },
+      { "entity": "minecraft:evoker", "weight": 1, "min_count": 1, "max_count": 1 }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "type": "asclepius:socket_grant",
+  "consume_catalyst": true,
+  "base": { "id": "#minecraft:pickaxes" },
+  "catalyst": { "id": "minecraft:echo_shard", "count": 4 },
+  "sockets": 1,
+  "max_sockets": 2,
+  "conditions": {
+    "required_levels": 25,
+    "require_night": true,
+    "failure_chance": 0.10,
+    "failure_mobs": [
+      { "entity": "minecraft:husk", "weight": 5, "min_count": 2, "max_count": 3 },
+      { "entity": "minecraft:spider", "weight": 2, "min_count": 1, "max_count": 2 }
+    ]
+  }
+}

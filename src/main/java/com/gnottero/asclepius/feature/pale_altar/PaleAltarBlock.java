@@ -2,6 +2,7 @@ package com.gnottero.asclepius.feature.pale_altar;
 
 import com.gnottero.asclepius.block.SimpleEntityBlock;
 import com.gnottero.asclepius.feature.pale_altar.recipe.AltarRecipe;
+import com.gnottero.asclepius.feature.pale_altar.recipe.AltarRecipeConditions;
 import com.gnottero.asclepius.feature.pale_altar.recipe.AltarRecipeInput;
 import com.gnottero.asclepius.feature.pale_altar.recipe.AltarRitualRecipe;
 import com.gnottero.asclepius.feature.pale_altar.recipe.EnchantmentMergeRecipe;
@@ -20,6 +21,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
@@ -41,8 +43,11 @@ import java.util.Optional;
  */
 public class PaleAltarBlock extends SimpleEntityBlock {
 
-    private static final Component MSG_CONDITIONS_NOT_MET = Component.translatable("block.asclepius.altar.conditions_not_met");
+    private static final Component MSG_REQUIRES_OPEN_SKY = Component.translatable("block.asclepius.altar.requires_open_sky");
+    private static final Component MSG_REQUIRES_NIGHT = Component.translatable("block.asclepius.altar.requires_night");
+    private static final Component MSG_MAX_SOCKETS_REACHED = Component.translatable("block.asclepius.altar.max_sockets_reached");
     private static final Component MSG_NO_COMPATIBLE_ENCHANTS = Component.translatable("block.asclepius.altar.no_compatible_enchants");
+    private static final Component MSG_RITUAL_FAILED = Component.translatable("block.asclepius.altar.ritual_failed");
 
     public PaleAltarBlock(Properties properties) {
         super(properties, PaleAltarBlockEntity::new);
@@ -74,8 +79,15 @@ public class PaleAltarBlock extends SimpleEntityBlock {
             return InteractionResult.SUCCESS_SERVER;
         }
 
-        // Hammer with an item already on the altar and open sky above: attempt the ritual craft.
-        if (stack.getItem() instanceof HammerItem && altarHasItem && level.canSeeSky(pos.above())) {
+        // Hammer with an item already on the altar: attempt the ritual craft, but
+        // only under open sky. canSeeSky is a read-only heightmap query safe to call
+        // identically on both the client and server branches, so this still returns
+        // the same InteractionResult on both sides.
+        if (stack.getItem() instanceof HammerItem && altarHasItem) {
+            if (!level.canSeeSky(pos.above())) {
+                if (serverPlayer != null) serverPlayer.sendOverlayMessage(MSG_REQUIRES_OPEN_SKY);
+                return InteractionResult.SUCCESS_SERVER;
+            }
             if (serverPlayer != null) {
                 return attemptCraft(altar, stack, serverPlayer, level, pos);
             }
@@ -98,6 +110,11 @@ public class PaleAltarBlock extends SimpleEntityBlock {
 
     private static void syncBlock(ServerPlayer player) {
         player.inventoryMenu.sendAllDataToRemote();
+    }
+
+    private static void chargeToolAndXp(ItemStack hammer, ServerPlayer player, int requiredXPPoints) {
+        hammer.hurtAndBreak(1, player, InteractionHand.MAIN_HAND);
+        if (requiredXPPoints > 0) player.giveExperiencePoints(-requiredXPPoints);
     }
 
     private InteractionResult attemptCraft(PaleAltarBlockEntity altar, ItemStack hammer, ServerPlayer player, Level level, BlockPos pos) {
@@ -131,7 +148,7 @@ public class PaleAltarBlock extends SimpleEntityBlock {
         } else if (socketGrant.isPresent()) {
             SocketGrantRecipe r = socketGrant.get().value();
             if (altarItem.getOrDefault(AsclepiusComponents.MAX_SOCKETS, 0) >= r.getMaxSockets()) {
-                player.sendOverlayMessage(MSG_CONDITIONS_NOT_MET);
+                player.sendOverlayMessage(MSG_MAX_SOCKETS_REACHED);
                 return InteractionResult.PASS;
             }
             recipe = r;
@@ -159,8 +176,32 @@ public class PaleAltarBlock extends SimpleEntityBlock {
         }
 
         if (!isCreative && !recipe.checkConditions(player, level)) {
-            player.sendOverlayMessage(MSG_CONDITIONS_NOT_MET);
+            player.sendOverlayMessage(MSG_REQUIRES_NIGHT);
             return InteractionResult.PASS;
+        }
+
+        AltarRecipeConditions conditions = recipe.getConditions();
+        boolean ritualFailed = !isCreative && conditions.rollFailure(level.getRandom());
+
+        if (ritualFailed) {
+            // Failure always costs the catalyst, regardless of the recipe's normal
+            // consume_catalyst flag — it's the punishment for the botched ritual.
+            offhand.shrink(recipe.getCatalystAmount());
+            chargeToolAndXp(hammer, player, requiredXPPoints);
+
+            conditions.failureMobs().roll(level.getRandom()).ifPresent(entry -> {
+                int count = entry.minCount() + level.getRandom().nextInt(entry.maxCount() - entry.minCount() + 1);
+                for (int i = 0; i < count; i++) {
+                    entry.entityType().spawn((ServerLevel) level, pos.above(), EntitySpawnReason.TRIGGERED);
+                }
+            });
+
+            level.playSound(null, pos, SoundEvents.EVOKER_CAST_SPELL, SoundSource.BLOCKS, 1.0f, 0.8f);
+            ((ServerLevel) level).sendParticles(ParticleTypes.LARGE_SMOKE,
+                    pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 20, 0.3, 0.5, 0.3, 0.05);
+            player.sendOverlayMessage(MSG_RITUAL_FAILED);
+            syncBlock(player);
+            return InteractionResult.SUCCESS_SERVER;
         }
 
         if (!isCreative) {
@@ -169,11 +210,10 @@ public class PaleAltarBlock extends SimpleEntityBlock {
             } else if (offhand.isDamageableItem()) {
                 offhand.hurtAndBreak(1, player, InteractionHand.OFF_HAND);
             }
-            hammer.hurtAndBreak(1, player, InteractionHand.MAIN_HAND);
-            if (requiredXPPoints > 0) player.giveExperiencePoints(-requiredXPPoints);
+            chargeToolAndXp(hammer, player, requiredXPPoints);
         }
 
-        altar.setStoredItem(result);
+        altar.setCraftedResult(result);
 
         level.playSound(null, pos, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0f, 1.0f);
         ((ServerLevel) level).sendParticles(ParticleTypes.OMINOUS_SPAWNING,

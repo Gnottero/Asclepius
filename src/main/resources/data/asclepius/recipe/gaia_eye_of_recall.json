@@ -1,0 +1,31 @@
+{
+  "type": "asclepius:altar",
+  "consume_catalyst": false,
+  "base": {
+    "id": "asclepius:eye_of_recall"
+  },
+  "catalyst": {
+    "id": "asclepius:gaia_ingot"
+  },
+  "result": {
+    "id": "asclepius:gaia_eye_of_recall"
+  },
+  "conditions": {
+    "required_levels": 50,
+    "failure_chance": 0.3,
+    "failure_mobs": [
+      {
+        "entity": "minecraft:wither_skeleton",
+        "weight": 3,
+        "min_count": 1,
+        "max_count": 2
+      },
+      {
+        "entity": "minecraft:vex",
+        "weight": 1,
+        "min_count": 2,
+        "max_count": 4
+      }
+    ]
+  }
+}

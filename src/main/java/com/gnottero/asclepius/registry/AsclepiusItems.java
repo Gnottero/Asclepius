@@ -6,7 +6,7 @@ import com.gnottero.asclepius.feature.forgotten_relics.ForgottenRelicItem;
 import com.gnottero.asclepius.feature.misc.EnderKeyItem;
 import com.gnottero.asclepius.feature.misc.FoxAmuletItem;
 import com.gnottero.asclepius.feature.recall.EyeOfRecallItem;
-import com.gnottero.asclepius.feature.recall.GoldenEyeOfRecall;
+import com.gnottero.asclepius.feature.recall.GaiaEyeOfRecall;
 import com.gnottero.asclepius.feature.tools.HammerItem;
 import com.gnottero.asclepius.feature.tools.PaxelItem;
 import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
@@ -49,10 +49,10 @@ public class AsclepiusItems {
             p -> new FoxAmuletItem(p.fireResistant().stacksTo(1).durability(3)));
 
     public static final Item RECALL_EYE = registerItem("eye_of_recall",
-            p -> new EyeOfRecallItem(p.stacksTo(1).useCooldown(10.0f)));
+            p -> new EyeOfRecallItem(p.stacksTo(1).useCooldown(5.0f)));
 
-    public static final Item GOLDEN_EYE = registerItem("golden_eye_of_recall",
-            p -> new GoldenEyeOfRecall(p.stacksTo(1).useCooldown(10.0f)));
+    public static final Item GAIA_EYE = registerItem("gaia_eye_of_recall",
+            p -> new GaiaEyeOfRecall(p.stacksTo(1).useCooldown(5.0f)));
 
     // ── Materials ─────────────────────────────────────────────────────────────
 
@@ -163,7 +163,7 @@ public class AsclepiusItems {
                             output.accept(CRYSTALIZED_EXPERIENCE);
                             output.accept(ANCIENT_SQUID_RELIC);
                             output.accept(RECALL_EYE);
-                            output.accept(GOLDEN_EYE);
+                            output.accept(GAIA_EYE);
 
                             output.accept(WOODEN_HAMMER);
                             output.accept(STONE_HAMMER);

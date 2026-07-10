@@ -8,4 +8,5 @@ public interface AltarRitualRecipe extends Recipe<AltarRecipeInput> {
     boolean consumeCatalyst();
     int getCatalystAmount();
     default boolean checkConditions(Player player, Level level) { return true; }
+    default AltarRecipeConditions getConditions() { return AltarRecipeConditions.EMPTY; }
 }

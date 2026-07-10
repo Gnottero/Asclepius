@@ -34,7 +34,7 @@ public class AsclepiusLangProvider extends FabricLanguageProvider {
 
         translationBuilder.add("item.asclepius.ender_key", "Ender Key");
         translationBuilder.add("item.asclepius.eye_of_recall", "Eye of Recall");
-        translationBuilder.add("item.asclepius.golden_eye_of_recall", "Golden Eye of Recall");
+        translationBuilder.add("item.asclepius.gaia_eye_of_recall", "Gaia Eye of Recall");
         translationBuilder.add("item.asclepius.fox_amulet", "Fox Amulet");
 
         translationBuilder.add("item.asclepius.gaia_ingot", "Gaia Ingot");
@@ -50,6 +50,7 @@ public class AsclepiusLangProvider extends FabricLanguageProvider {
         translationBuilder.add("item.asclepius.forgotten_relics.instant_repair_hint", "Or right-click with %s levels to repair instantly");
         translationBuilder.add("item.asclepius.forgotten_relics.not_enough_xp_to_repair", "You need %s levels to instantly repair this relic");
         translationBuilder.add("item.asclepius.sockets_title", "Embedded Relics");
+        translationBuilder.add("item.asclepius.empty_socket", "Empty Socket");
 
         translationBuilder.add("item.asclepius.forgotten_relics.rarity.begin", "Rarity: [%s]");
         translationBuilder.add("item.asclepius.forgotten_relics.rarity.deteriorated", "Deteriorated");
@@ -94,15 +95,20 @@ public class AsclepiusLangProvider extends FabricLanguageProvider {
         translationBuilder.add("item.asclepius.eye_of_recall_description", "Teleports to spawn point, consuming %s");
         translationBuilder.add("item.asclepius.eye_of_recall.no_charges", "No charges remaining. Use %s to recharge");
 
-        translationBuilder.add("item.asclepius.golden_eye_of_recall_description", "Teleports to the linked Lodestone, consuming %s");
-        translationBuilder.add("item.asclepius.golden_eye_of_recall.linked_to", "Linked to: %s [%s, %s, %s]");
-        translationBuilder.add("item.asclepius.golden_eye_of_recall.not_linked", "Not linked to a Lodestone");
+        translationBuilder.add("item.asclepius.gaia_eye_of_recall_description", "Teleports to the linked Lodestone, consuming %s");
+        translationBuilder.add("item.asclepius.gaia_eye_of_recall.linked_to", "Linked to: %s [%s, %s, %s]");
+        translationBuilder.add("item.asclepius.gaia_eye_of_recall.not_linked", "Not linked to a Lodestone");
 
         translationBuilder.add("item.asclepius.ender_key_description", "Unlocks vaults found in End City Ships");
 
-        translationBuilder.add("block.asclepius.altar.conditions_not_met", "The altar does not respond to your offering...");
+        translationBuilder.add("block.asclepius.altar.requires_open_sky", "The ritual demands an open sky above...");
+        translationBuilder.add("block.asclepius.altar.requires_night", "The altar only stirs beneath the night sky...");
+        translationBuilder.add("block.asclepius.altar.max_sockets_reached", "This item cannot hold any more sockets");
         translationBuilder.add("block.asclepius.altar.not_enough_xp", "You need %s levels to perform this ritual");
         translationBuilder.add("block.asclepius.altar.no_compatible_enchants", "No enchantments can be transferred...");
+        translationBuilder.add("block.asclepius.altar.ritual_failed", "The ritual goes horribly wrong!");
+
+        translationBuilder.add("item.asclepius.altar_hint", "Rumored to hold power within the Pale Altar...");
     }
 
     private static void addDecorativeBlockTranslations(TranslationBuilder translationBuilder) {

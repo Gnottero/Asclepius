@@ -9,13 +9,8 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.AtlasIds;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.contents.objects.AtlasSprite;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -31,7 +26,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.NonNull;
@@ -150,12 +144,23 @@ public abstract class ForgottenRelicItem extends Item {
     // whole interaction model — feeding repair materials and applying the relic
     // to a target item — via the stack-click override hooks (dragging one stack
     // onto another in an inventory slot) instead of a dedicated GUI.
+    // No isClientSide/ServerPlayer guard here (matching vanilla BundleItem):
+    // dragging an item from the creative-tab palette onto this slot is handled
+    // entirely client-side (the client computes the merged result locally and
+    // sends it as the ServerboundSetCreativeModeSlotPacket payload), so this hook
+    // must run identically on both sides or that interaction silently no-ops and
+    // vanilla just overwrites the slot with the raw dragged item.
     @Override
     public boolean overrideOtherStackedOnMe(ItemStack self, ItemStack other, Slot slot, ClickAction clickAction,
             Player player, SlotAccess carriedItem) {
-        if (player.level().isClientSide() || !(player instanceof ServerPlayer))
+        if (clickAction != ClickAction.PRIMARY || !slot.allowModification(player))
             return false;
-        if (isRepaired(self) || clickAction != ClickAction.SECONDARY || !slot.allowModification(player))
+
+        return tryFeedRepairMaterial(self, other);
+    }
+
+    private boolean tryFeedRepairMaterial(ItemStack self, ItemStack other) {
+        if (isRepaired(self))
             return false;
 
         List<ItemStackTemplate> repairMaterials = getRepairMaterials(self);
@@ -181,8 +186,6 @@ public abstract class ForgottenRelicItem extends Item {
 
     @Override
     public boolean overrideStackedOnOther(ItemStack self, Slot slot, ClickAction clickAction, Player player) {
-        if (player.level().isClientSide() || !(player instanceof ServerPlayer))
-            return false;
         if (!isRepaired(self) || clickAction != ClickAction.SECONDARY || !slot.allowModification(player))
             return false;
 
@@ -192,7 +195,6 @@ public abstract class ForgottenRelicItem extends Item {
 
         applyAttribute(self, other);
         addToSockets(self, other);
-        addRelicLore(self, other);
 
         self.shrink(1);
         player.level().playSound(null, player.blockPosition(), getApplySound(), SoundSource.BLOCKS, 1.0f, 1.0f);
@@ -338,43 +340,18 @@ public abstract class ForgottenRelicItem extends Item {
         return maxSockets > 0 && usedSockets < maxSockets;
     }
 
+    // Rarity is carried along as a component patch (rather than just the bare
+    // item) purely so the client-side socket tooltip can recover the correct
+    // rarity color per entry — see RelicSocketTooltipHint, which renders this
+    // list live instead of the old baked-lore approach.
     private void addToSockets(ItemStack self, ItemStack other) {
         var sockets = new ArrayList<>(other.getOrDefault(AsclepiusComponents.SOCKETS, List.of()));
-        sockets.add(new ItemStackTemplate(self.getItem()));
-        other.set(AsclepiusComponents.SOCKETS, sockets);
-    }
-
-    private void addRelicLore(ItemStack self, ItemStack other) {
-        var currentLore = other.getOrDefault(DataComponents.LORE, ItemLore.EMPTY);
-        var lines = new ArrayList<>(currentLore.lines());
         ForgottenRelicsRarity rarity = self.get(AsclepiusComponents.RELIC_RARITY);
-
-        var sockets = other.getOrDefault(AsclepiusComponents.SOCKETS, List.of());
-        // This method runs after addToSockets() already appended the new socket,
-        // so size() == 1 here means "this was the first relic ever applied", not
-        // "the item currently has exactly one socket" — it gates printing the
-        // "Sockets:" lore header exactly once.
-        if (sockets.size() == 1) {
-            if (!lines.isEmpty())
-                lines.add(Component.empty());
-            lines.add(Component.translatable("item.asclepius.sockets_title").withStyle(ChatFormatting.GRAY)
-                    .withStyle(style -> style.withColor(ChatFormatting.GRAY).withItalic(false)));
-        }
-
-        // Safe to derive from the registry key here (rather than requiring every
-        // subclass to pass its own id) because addRelicLore only ever runs from a
-        // real gameplay interaction (overrideStackedOnOther), always well after
-        // AsclepiusItems.registerAll() has registered this item.
-        Identifier spriteId = BuiltInRegistries.ITEM.getKey(this).withPrefix("item/");
-        var spriteComponent = Component.object(new AtlasSprite(AtlasIds.ITEMS, spriteId))
-                .withStyle(style -> style.withColor(ChatFormatting.WHITE).withItalic(false));
-
-        var relicLine = spriteComponent
-                .append(Component.literal(" ").withStyle(Style.EMPTY))
-                .append(Component.translatable(self.getItemName().getString()).withStyle(rarity.getColor()));
-
-        lines.add(relicLine);
-        other.set(DataComponents.LORE, new ItemLore(lines));
+        DataComponentPatch patch = rarity == null
+                ? DataComponentPatch.EMPTY
+                : DataComponentPatch.builder().set(AsclepiusComponents.RELIC_RARITY, rarity).build();
+        sockets.add(new ItemStackTemplate(self.getItem(), patch));
+        other.set(AsclepiusComponents.SOCKETS, sockets);
     }
 
     public @Nullable DataComponentType<?> getRequiredComponent() {

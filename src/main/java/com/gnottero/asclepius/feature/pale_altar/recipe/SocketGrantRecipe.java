@@ -11,7 +11,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class SocketGrantRecipe implements AltarRitualRecipe {
+public class SocketGrantRecipe implements AltarRitualRecipe, IngredientBasedAltarRecipe {
 
     private final boolean consumeCatalyst;
     private final String group;
@@ -91,7 +91,9 @@ public class SocketGrantRecipe implements AltarRitualRecipe {
     public boolean checkConditions(Player player, Level level) { return conditions.check(player, level); }
 
     public AltarRecipeConditions getConditions() { return this.conditions; }
+    @Override
     public IngredientWithComponents getBaseItem() { return altarItem; }
+    @Override
     public IngredientWithComponents getCatalystItem() { return catalyst; }
     public int getSocketsGranted() { return socketsGranted; }
     public int getMaxSockets() { return maxSockets; }

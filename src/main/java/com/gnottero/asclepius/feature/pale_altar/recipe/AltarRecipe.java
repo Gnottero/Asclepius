@@ -11,7 +11,7 @@ import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class AltarRecipe implements AltarRitualRecipe {
+public class AltarRecipe implements AltarRitualRecipe, IngredientBasedAltarRecipe {
 
     private final boolean consumeCatalyst;
     private final String group;
@@ -114,7 +114,9 @@ public class AltarRecipe implements AltarRitualRecipe {
     @Override
     public boolean checkConditions(Player player, Level level) { return conditions.check(player, level); }
 
+    @Override
     public IngredientWithComponents getBaseItem() { return altarItem; }
+    @Override
     public IngredientWithComponents getCatalystItem() { return catalyst; }
     public ItemStackTemplate getResultItem() { return result; }
 }

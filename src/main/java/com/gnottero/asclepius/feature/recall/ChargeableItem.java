@@ -42,7 +42,7 @@ public abstract class ChargeableItem extends Item {
     }
 
     public boolean overrideOtherStackedOnMe(ItemStack self, ItemStack other, Slot slot, ClickAction clickAction, Player player, SlotAccess carriedItem) {
-        if (clickAction != ClickAction.SECONDARY) return false;
+        if (clickAction != ClickAction.PRIMARY) return false;
         if (!slot.allowModification(player)) return false;
         if (!other.is(fuel)) return false;
 
@@ -57,8 +57,8 @@ public abstract class ChargeableItem extends Item {
         return true;
     }
 
-    // Eye of Recall and Golden Eye of Recall are the same item under the hood
-    // (Golden Eye pre-dates the CHARGE component split) — CHARGE is checked first
+    // Eye of Recall and Gaia Eye of Recall are the same item under the hood
+    // (Gaia Eye pre-dates the CHARGE component split) — CHARGE is checked first
     // and EYE_CHARGE_LEGACY is only a fallback for stacks saved before the split,
     // so old worlds keep their charge instead of resetting to 0.
     public static int getCharge(ItemStack stack) {
@@ -93,7 +93,7 @@ public abstract class ChargeableItem extends Item {
     // Template Method: the tooltip skeleton (description line, then charge count)
     // is shared and fixed here, but the description text and any extra lines are
     // supplied by each subclass — keeps every chargeable item's tooltip structurally
-    // consistent while letting the actual wording differ (e.g. Golden Eye of Recall
+    // consistent while letting the actual wording differ (e.g. Gaia Eye of Recall
     // shows a linked-Lodestone line that Eye of Recall doesn't have).
     @Override
     public final void appendHoverText(@NonNull ItemStack stack, @NonNull TooltipContext context, @NonNull TooltipDisplay tooltipDisplay, @NonNull Consumer<Component> tooltipAdder, @NonNull TooltipFlag flag) {

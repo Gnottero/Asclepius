@@ -28,9 +28,9 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 
 
-public class GoldenEyeOfRecall extends ChargeableItem {
+public class GaiaEyeOfRecall extends ChargeableItem {
 
-    public GoldenEyeOfRecall(Properties properties) {
+    public GaiaEyeOfRecall(Properties properties) {
         super(properties, Items.GOLD_INGOT, SoundEvents.RESPAWN_ANCHOR_AMBIENT);
     }
 
@@ -66,7 +66,7 @@ public class GoldenEyeOfRecall extends ChargeableItem {
         if (replaceExistingStack) {
             stack.set(DataComponents.LODESTONE_TRACKER, target);
         } else {
-            ItemStack lodestoneCompass = stack.transmuteCopy(AsclepiusItems.GOLDEN_EYE, 1);
+            ItemStack lodestoneCompass = stack.transmuteCopy(AsclepiusItems.GAIA_EYE, 1);
             stack.consume(1, player);
             lodestoneCompass.set(DataComponents.LODESTONE_TRACKER, target);
             if (!player.getInventory().add(lodestoneCompass)) player.drop(lodestoneCompass, false);
@@ -81,7 +81,7 @@ public class GoldenEyeOfRecall extends ChargeableItem {
         Optional<GlobalPos> target = getLinkedTarget(stack);
 
         // Not yet linked (or a client-side/non-player call): there's nowhere to
-        // recall to, so this behaves like a plain item (PASS) — an unlinked Golden
+        // recall to, so this behaves like a plain item (PASS) — an unlinked Gaia
         // Eye is inert until useOn() links it to a Lodestone.
         if (level.isClientSide() || !(player instanceof ServerPlayer) || target.isEmpty()) {
             return InteractionResult.PASS;
@@ -91,7 +91,7 @@ public class GoldenEyeOfRecall extends ChargeableItem {
 
         GlobalPos globPos = target.get();
         // +1 on Y so the player lands on top of the lodestone instead of inside it.
-        player.teleportTo(((ServerLevel) level).getServer().getLevel(globPos.dimension()), globPos.pos().getX(), globPos.pos().above(1).getY(), globPos.pos().getZ(), EnumSet.noneOf(Relative.class), player.yBodyRot, player.xRotO, false);
+        player.teleportTo(((ServerLevel) level).getServer().getLevel(globPos.dimension()), globPos.pos().getX() + 0.5F, globPos.pos().getY() + 1.0F, globPos.pos().getZ() + 0.5F, EnumSet.noneOf(Relative.class), player.yBodyRot, player.xRotO, false);
         level.playSound(null, player.blockPosition(), sound, SoundSource.BLOCKS, 1.0f, 1.0f);
 
         return InteractionResult.SUCCESS;
@@ -99,7 +99,7 @@ public class GoldenEyeOfRecall extends ChargeableItem {
 
     @Override
     protected String getDescriptionKey() {
-        return "item.asclepius.golden_eye_of_recall_description";
+        return "item.asclepius.gaia_eye_of_recall_description";
     }
 
     // The linked position is the one piece of state that differs per-stack and
@@ -109,7 +109,7 @@ public class GoldenEyeOfRecall extends ChargeableItem {
         Optional<GlobalPos> target = getLinkedTarget(stack);
 
         if (target.isEmpty()) {
-            tooltipAdder.accept(Component.translatable("item.asclepius.golden_eye_of_recall.not_linked")
+            tooltipAdder.accept(Component.translatable("item.asclepius.gaia_eye_of_recall.not_linked")
                     .withStyle(ChatFormatting.DARK_GRAY));
             return;
         }
@@ -118,7 +118,7 @@ public class GoldenEyeOfRecall extends ChargeableItem {
         BlockPos pos = globPos.pos();
         String dimensionName = prettifyDimensionName(globPos.dimension().identifier());
 
-        tooltipAdder.accept(Component.translatable("item.asclepius.golden_eye_of_recall.linked_to",
+        tooltipAdder.accept(Component.translatable("item.asclepius.gaia_eye_of_recall.linked_to",
                         dimensionName, pos.getX(), pos.getY(), pos.getZ())
                 .withStyle(ChatFormatting.DARK_GRAY));
     }

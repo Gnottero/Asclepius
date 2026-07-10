@@ -2,7 +2,7 @@
   "type": "asclepius:altar",
   "consume_catalyst": false,
   "base": {
-    "id": "asclepius:fox_amulet"
+    "id": "minecraft:amethyst_shard"
   },
   "catalyst": {
     "id": "asclepius:fox_amulet"
